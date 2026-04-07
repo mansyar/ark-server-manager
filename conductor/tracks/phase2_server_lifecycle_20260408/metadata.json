@@ -1,0 +1,10 @@
+{
+  "track_id": "phase2_server_lifecycle_20260408",
+  "title": "Phase 2 — Server Lifecycle Management",
+  "created_at": "2026-04-08T01:07:00Z",
+  "status": "in_progress",
+  "type": "feature",
+  "prerequisites": ["phase1_server_profile_mgmt_20260408"],
+  "owner": null,
+  "description": "Enable starting/stopping ARK servers via the app UI, with live console output and player list via RCON query."
+}
