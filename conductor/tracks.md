@@ -15,6 +15,10 @@ Tracks are major phases of development. Each track has its own plan and working 
   *Link: [./conductor/archive/test-coverage-improvement-20250408/](./conductor/archive/test-coverage-improvement-20250408/)*
   *(Archived)*
 
+- [x] **setup test coverage for typescript and rust**
+  *Link: [./conductor/archive/test-coverage-ts-rust/](./conductor/archive/test-coverage-ts-rust/)*
+  *(Archived)*
+
 - [x] **Phase 3 SteamCMD Integration:** SteamCMD integration (server install/update)
   *Link: [./conductor/archive/phase3_steamcmd_integration_20260408/](./conductor/archive/phase3_steamcmd_integration_20260408/)*
   *(Archived)*
