@@ -43,21 +43,21 @@
 
 ## Phase 4: Type Tests (server.ts)
 
-- [ ] 4.1 Create `src/types/__tests__/server.test.ts`
-- [ ] 4.2 Write tests exercising all type definitions (ServerStatus, ServerHandle, ConsoleLine, PlayerInfo, ValidationResult)
-- [ ] 4.3 Run tests, verify all pass
-- [ ] 4.4 Verify coverage >80% for server.ts
+- [x] 4.1 Create `src/types/__tests__/server.test.ts`
+- [x] 4.2 Write tests exercising all type definitions (ServerStatus, ServerHandle, ConsoleLine, PlayerInfo, ValidationResult)
+- [x] 4.3 Run tests, verify all pass
+- [x] 4.4 Verify coverage >80% for server.ts
 
 ## Phase 5: Verification
 
-- [ ] 5.1 Run full test suite: `npm test`
-- [ ] 5.2 Run full coverage: `npm run test:coverage`
-- [ ] 5.3 Verify all stores/components >80%
-- [ ] 5.4 Verify no lint errors: `npm run check`
-- [ ] 5.5 Update test coverage summary in this plan
+- [x] 5.1 Run full test suite: `npm test`
+- [x] 5.2 Run full coverage: `npm run test:coverage`
+- [x] 5.3 Verify all stores/components >80%
+- [x] 5.4 Verify no lint errors: `npm run check`
+- [x] 5.5 Update test coverage summary in this plan
 
 ## Phase 6: Cleanup & Commit
 
-- [ ] 6.1 Commit all new test files
-- [ ] 6.2 Commit updated plan.md
-- [ ] 6.3 Update tracks.md registry
+- [x] 6.1 Commit all new test files
+- [x] 6.2 Commit updated plan.md
+- [x] 6.3 Update tracks.md registry
