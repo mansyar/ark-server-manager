@@ -84,8 +84,8 @@ pub fn install_steamcmd(config: InstallerConfig) -> Result<PathBuf, SteamCmdErro
 /// Download a file from URL synchronously.
 fn download_file_sync(url: &str) -> Result<Vec<u8>, SteamCmdError> {
     // Use blocking reqwest call via tokio runtime
-    let response = reqwest::blocking::get(url)
-        .map_err(|e| SteamCmdError::NetworkError(e.to_string()))?;
+    let response =
+        reqwest::blocking::get(url).map_err(|e| SteamCmdError::NetworkError(e.to_string()))?;
 
     if !response.status().is_success() {
         return Err(SteamCmdError::DownloadFailed(format!(
@@ -127,8 +127,8 @@ fn extract_steamcmd(data: &[u8], install_dir: &Path) -> Result<(), SteamCmdError
 fn extract_zip(data: &[u8], install_dir: &Path) -> Result<(), SteamCmdError> {
     use std::io::Cursor;
     let cursor = Cursor::new(data);
-    let mut archive = zip::ZipArchive::new(cursor)
-        .map_err(|e| SteamCmdError::InstallFailed(e.to_string()))?;
+    let mut archive =
+        zip::ZipArchive::new(cursor).map_err(|e| SteamCmdError::InstallFailed(e.to_string()))?;
 
     for i in 0..archive.len() {
         let mut file = archive.by_index(i)?;

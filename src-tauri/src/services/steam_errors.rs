@@ -40,13 +40,24 @@ impl fmt::Display for SteamCmdError {
                 write!(f, "SteamCMD installation failed: {}. Check your internet connection and try again.", msg)
             }
             SteamCmdError::UpdateCheckFailed(msg) => {
-                write!(f, "Failed to check for updates: {}. SteamCMD may be corrupted.", msg)
+                write!(
+                    f,
+                    "Failed to check for updates: {}. SteamCMD may be corrupted.",
+                    msg
+                )
             }
             SteamCmdError::ServerRunning => {
-                write!(f, "Cannot update server while it is running. Stop the server first.")
+                write!(
+                    f,
+                    "Cannot update server while it is running. Stop the server first."
+                )
             }
             SteamCmdError::ValidationFailed(msg) => {
-                write!(f, "File validation failed: {}. Some files may be corrupted.", msg)
+                write!(
+                    f,
+                    "File validation failed: {}. Some files may be corrupted.",
+                    msg
+                )
             }
             SteamCmdError::DownloadFailed(msg) => {
                 write!(f, "Download failed after multiple attempts: {}", msg)

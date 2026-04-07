@@ -102,8 +102,7 @@ pub fn run_steamcmd_script(
     let output_lines: Arc<Mutex<Vec<String>>> = Arc::new(Mutex::new(Vec::new()));
 
     // Read stdout in a separate thread if callback is provided
-    let rx = if progress_callback.is_some() {
-        let callback = progress_callback.unwrap();
+    let rx = if let Some(callback) = progress_callback {
         let output_clone: Arc<Mutex<Vec<String>>> = Arc::clone(&output_lines);
         let (tx, rx) = mpsc::channel();
         std::thread::spawn(move || {
@@ -113,7 +112,7 @@ pub fn run_steamcmd_script(
                     if let Some(progress) = parse_progress_line(&line) {
                         callback(SteamProgressOutput {
                             percentage: progress.percentage,
-                            speed: progress.speed_bps.map(|s| format_speed(s)),
+                            speed: progress.speed_bps.map(format_speed),
                             eta_seconds: progress.eta_seconds,
                             line: progress.raw_line,
                         });
@@ -132,7 +131,10 @@ pub fn run_steamcmd_script(
     if let Some(stderr) = stderr {
         let reader = BufReader::new(stderr);
         for line in reader.lines().map_while(Result::ok) {
-            output_lines.lock().unwrap().push(format!("[stderr] {}", line));
+            output_lines
+                .lock()
+                .unwrap()
+                .push(format!("[stderr] {}", line));
         }
     }
 
@@ -229,8 +231,8 @@ fn format_speed(bytes_per_sec: u64) -> String {
 /// Verify server installation by running +verify command.
 #[allow(dead_code)]
 pub fn verify_install(steamcmd_path: &Path, install_dir: &Path) -> Result<bool, SteamCmdError> {
-    let config = RunnerConfig::new(steamcmd_path.to_path_buf())
-        .with_install_dir(install_dir.to_path_buf());
+    let config =
+        RunnerConfig::new(steamcmd_path.to_path_buf()).with_install_dir(install_dir.to_path_buf());
 
     let script = format!(
         "force_install_dir \"{}\"\napp_update 376030 validate",

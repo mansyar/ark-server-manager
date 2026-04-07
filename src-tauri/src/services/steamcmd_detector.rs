@@ -71,7 +71,6 @@ pub fn validate_steamcmd(path: &Path) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::env;
 
     #[test]
     fn test_detect_none_when_not_present() {

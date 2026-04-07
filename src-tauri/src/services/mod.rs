@@ -1,7 +1,7 @@
 pub mod build_id_checker;
 pub mod ini_conversion;
-pub mod retry;
 pub mod rcon_client;
+pub mod retry;
 pub mod server_discovery;
 pub mod server_state;
 pub mod steam_errors;

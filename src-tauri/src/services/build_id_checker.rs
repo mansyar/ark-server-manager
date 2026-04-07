@@ -27,8 +27,8 @@ pub fn check_build_ids(
     steamcmd_path: &Path,
     install_dir: &Path,
 ) -> Result<BuildIdInfo, crate::services::steam_errors::SteamCmdError> {
-    let config = RunnerConfig::new(steamcmd_path.to_path_buf())
-        .with_install_dir(install_dir.to_path_buf());
+    let config =
+        RunnerConfig::new(steamcmd_path.to_path_buf()).with_install_dir(install_dir.to_path_buf());
 
     let script = format!(
         "force_install_dir \"{}\"\napp_update 376030 -checksrc",
@@ -74,8 +74,8 @@ pub fn get_current_build_id(
     steamcmd_path: &Path,
     install_dir: &Path,
 ) -> Result<Option<u64>, crate::services::steam_errors::SteamCmdError> {
-    let config = RunnerConfig::new(steamcmd_path.to_path_buf())
-        .with_install_dir(install_dir.to_path_buf());
+    let config =
+        RunnerConfig::new(steamcmd_path.to_path_buf()).with_install_dir(install_dir.to_path_buf());
 
     // Run with -complete_done to get info without triggering download
     let script = format!(

@@ -141,8 +141,8 @@ fn validate_server_install(
     steamcmd_path: &Path,
     install_dir: &Path,
 ) -> Result<bool, SteamCmdError> {
-    let runner_config = RunnerConfig::new(steamcmd_path.to_path_buf())
-        .with_install_dir(install_dir.to_path_buf());
+    let runner_config =
+        RunnerConfig::new(steamcmd_path.to_path_buf()).with_install_dir(install_dir.to_path_buf());
 
     let script = format!(
         "force_install_dir \"{}\"\napp_update 376030 validate",

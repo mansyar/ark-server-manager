@@ -88,10 +88,10 @@ fn parse_speed(speed_str: &str) -> Option<u64> {
     let unit = caps.get(2)?.as_str();
 
     let multiplier = match unit {
-        "B/s" => 1,
-        "KB/s" => 1024,
-        "MB/s" => 1024 * 1024,
-        "GB/s" => 1024 * 1024 * 1024,
+        "B" => 1,
+        "KB" => 1024,
+        "MB" => 1024 * 1024,
+        "GB" => 1024 * 1024 * 1024,
         _ => return None,
     };
 
