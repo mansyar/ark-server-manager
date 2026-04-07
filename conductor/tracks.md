@@ -9,11 +9,14 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
-- [x] **Lint Stage Enhancement:** Update lint stage with rust code quality check and script to check if files have more than 500 lines of code
-  *Link: [./conductor/tracks/lint-stage-enhancement_20260408/](./conductor/tracks/lint-stage-enhancement_20260408/)*
-  *(Completed)*
+- [ ] **Phase 3 SteamCMD Integration:** SteamCMD integration (server install/update)
+  *Link: [./conductor/tracks/phase3_steamcmd_integration_20260408/](./conductor/tracks/phase3_steamcmd_integration_20260408/)*
 
 ### Completed Tracks
+
+- [x] **Lint Stage Enhancement:** Update lint stage with rust code quality check and script to check if files have more than 500 lines of code
+  *Link: [./conductor/archive/lint-stage-enhancement_20260408/](./conductor/archive/lint-stage-enhancement_20260408/)*
+  *(Archived)*
 
 - [x] **Phase 2 — Server Lifecycle Management:** Start/stop ARK servers, live console output, RCON player list
   *Link: [./conductor/archive/phase2_server_lifecycle_20260408/](./conductor/archive/phase2_server_lifecycle_20260408/)*
