@@ -40,7 +40,7 @@
 
 | Component | Technology |
 |-----------|------------|
-| Package Manager | npm (frontend), Cargo (Rust) |
+| Package Manager | pnpm (frontend), Cargo (Rust) |
 | Tauri CLI | @tauri-apps/cli |
 | Target | Windows x64 (.exe), Linux AppImage later |
 | Signing | Tauri code signing (optional v1) |
