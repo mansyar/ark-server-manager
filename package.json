@@ -12,6 +12,7 @@
     "check": "tsc --noEmit && eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "bash scripts/test-coverage.sh",
     "prepare": "husky"
   },
   "dependencies": {
@@ -41,6 +42,7 @@
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
+    "@vitest/coverage-v8": "^4.1.3",
     "eslint": "^10.2.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
