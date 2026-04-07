@@ -80,9 +80,9 @@ This project uses husky + lint-staged to enforce code quality on every commit.
 
 | File Type | Checks |
 |-----------|--------|
-| `*.rs` | `cargo fmt -- --check`, `cargo clippy --all-targets --all-features -- -D warnings` |
-| `*.ts`, `*.tsx` | ESLint (auto-fix), Prettier (auto-fix) |
-| `*.ts`, `*.tsx`, `*.css` | Line count check (max 500 lines per file) |
+| `*.rs` | `cargo fmt -- --check`, `cargo clippy --all-targets --all-features -- -D warnings`, line count check (max 500 lines) |
+| `*.ts`, `*.tsx` | ESLint (auto-fix), Prettier (auto-fix), line count check (max 500 lines) |
+| `*.css` | Line count check (max 500 lines) |
 
 ### Line Count Policy
 

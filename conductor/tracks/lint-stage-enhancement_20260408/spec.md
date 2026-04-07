@@ -28,7 +28,7 @@ This track enhances the local pre-commit hook to add:
 ### 2.3 File Line Count Check
 - Script: `scripts/check-file-lines.sh`
 - Scans staged files matching: `*.rs`, `*.ts`, `*.tsx`, `*.css`
-- **Blocks commit** if any file exceeds 500 lines
+- **Blocks commit** if any file exceeds 500 lines (exempted files excluded)
 - Outputs offending file(s) with line count
 
 ---

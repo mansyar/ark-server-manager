@@ -101,9 +101,9 @@
 ### Checks Performed
 | File Type | Checks |
 |-----------|--------|
-| `*.rs` | `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings` |
-| `*.ts`, `*.tsx` | ESLint (auto-fix), Prettier (auto-fix) |
-| `*.ts`, `*.tsx`, `*.css` | Line count check (max 500 lines) |
+| `*.rs` | `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings`, line count check (max 500 lines) |
+| `*.ts`, `*.tsx` | ESLint (auto-fix), Prettier (auto-fix), line count check (max 500 lines) |
+| `*.css` | Line count check (max 500 lines) |
 
 ### Line Count Policy
 - Source files exceeding 500 lines are blocked from commit

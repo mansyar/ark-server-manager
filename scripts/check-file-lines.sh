@@ -5,7 +5,7 @@
 MAX_LINES=500
 
 # Exempt files (pre-existing violations - do not block on these)
-EXEMPT_FILES="src/services/server_state.rs src/commands.rs"
+EXEMPT_FILES="src-tauri/src/services/server_state.rs src-tauri/src/commands.rs"
 
 # Get list of staged files from arguments
 STAGED_FILES="$@"
