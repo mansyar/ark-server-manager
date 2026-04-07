@@ -9,7 +9,7 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
-- [ ] **Phase 3 SteamCMD Integration:** SteamCMD integration (server install/update)
+- [x] **Phase 3 SteamCMD Integration:** SteamCMD integration (server install/update)
   *Link: [./conductor/tracks/phase3_steamcmd_integration_20260408/](./conductor/tracks/phase3_steamcmd_integration_20260408/)*
 
 ### Completed Tracks
