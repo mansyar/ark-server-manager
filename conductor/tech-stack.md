@@ -55,7 +55,7 @@
 | IDE | VS Code + rust-analyzer + Volar |
 | Frontend Linting | ESLint + Prettier |
 | Rust Linting | clippy |
-| Git Hooks | husky (optional) |
+| Git Hooks | husky + lint-staged |
 
 ---
 

@@ -89,3 +89,28 @@
 
 - Target: ARK: Survival Evolved (current stable branch)
 - Compatibility with ARK server updates is handled gracefully — app shows warning if known breaking change detected
+
+---
+
+## 8. Code Quality & Linting
+
+### Pre-Commit Hooks
+- **husky + lint-staged** enforces code quality on every `git commit`
+- Hooks run automatically after `npm install` (via `prepare` script)
+
+### Checks Performed
+| File Type | Checks |
+|-----------|--------|
+| `*.rs` | `cargo fmt --check`, `cargo clippy --all-targets --all-features -- -D warnings` |
+| `*.ts`, `*.tsx` | ESLint (auto-fix), Prettier (auto-fix) |
+| `*.ts`, `*.tsx`, `*.css` | Line count check (max 500 lines) |
+
+### Line Count Policy
+- Source files exceeding 500 lines are blocked from commit
+- Pre-existing violations are exempted in `scripts/check-file-lines.sh`
+- Rationale: Large files indicate potential need for refactoring into smaller, focused modules
+
+### Bypassing Hooks
+```bash
+git commit --no-verify  # Discouraged — use only in emergencies
+```
