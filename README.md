@@ -71,3 +71,27 @@ npm run test
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+
+## Pre-Commit Hooks
+
+This project uses husky + lint-staged to enforce code quality on every commit.
+
+### What Runs on Commit
+
+| File Type | Checks |
+|-----------|--------|
+| `*.rs` | `cargo fmt -- --check`, `cargo clippy --all-targets --all-features -- -D warnings` |
+| `*.ts`, `*.tsx` | ESLint (auto-fix), Prettier (auto-fix) |
+| `*.ts`, `*.tsx`, `*.css` | Line count check (max 500 lines per file) |
+
+### Line Count Policy
+
+Files exceeding 500 lines are blocked from commit. Pre-existing violations are exempted in `scripts/check-file-lines.sh`.
+
+### Bypassing Hooks (Not Recommended)
+
+```bash
+git commit --no-verify  # Bypass all pre-commit hooks
+```
+
+Avoid this unless absolutely necessary — the hooks exist to maintain code quality.

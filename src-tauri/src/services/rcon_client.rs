@@ -37,7 +37,11 @@ impl ArkRconClient {
     /// # Returns
     ///
     /// A connected and authenticated RCON client, or an error.
-    pub async fn new(profile_name: String, addr: SocketAddr, password: &str) -> Result<Self, RconConnError> {
+    pub async fn new(
+        profile_name: String,
+        addr: SocketAddr,
+        password: &str,
+    ) -> Result<Self, RconConnError> {
         debug!("Connecting RCON to {} for profile '{}'", addr, profile_name);
 
         let conn = rcon::Connection::builder()
@@ -48,7 +52,10 @@ impl ArkRconClient {
                 reason: e.to_string(),
             })?;
 
-        debug!("RCON authenticated successfully for profile '{}'", profile_name);
+        debug!(
+            "RCON authenticated successfully for profile '{}'",
+            profile_name
+        );
 
         Ok(Self {
             profile_name,
@@ -68,10 +75,12 @@ impl ArkRconClient {
     /// The response string from the server, or an error.
     pub async fn execute(&self, cmd: &str) -> Result<String, RconConnError> {
         let mut conn = self.conn.lock().await;
-        conn.cmd(cmd).await.map_err(|e| RconConnError::CommandFailed {
-            command: cmd.to_string(),
-            reason: e.to_string(),
-        })
+        conn.cmd(cmd)
+            .await
+            .map_err(|e| RconConnError::CommandFailed {
+                command: cmd.to_string(),
+                reason: e.to_string(),
+            })
     }
 
     /// Gets the profile name this client is connected to.
@@ -142,15 +151,13 @@ impl std::error::Error for RconConnError {}
 impl From<RconError> for RconConnError {
     fn from(err: RconError) -> Self {
         match err {
-            RconError::Auth => {
-                RconConnError::AuthFailed { reason: "Authentication failed".to_string() }
-            }
-            RconError::Io(io_err) => {
-                RconConnError::ConnectionFailed {
-                    addr: "unknown".to_string(),
-                    reason: io_err.to_string(),
-                }
-            }
+            RconError::Auth => RconConnError::AuthFailed {
+                reason: "Authentication failed".to_string(),
+            },
+            RconError::Io(io_err) => RconConnError::ConnectionFailed {
+                addr: "unknown".to_string(),
+                reason: io_err.to_string(),
+            },
             _ => RconConnError::ConnectionFailed {
                 addr: "unknown".to_string(),
                 reason: err.to_string(),
@@ -368,7 +375,10 @@ Total players connected: 3"#;
             tribe: "TestTribe".to_string(),
             joined_at: None,
         };
-        assert_eq!(format!("{}", player), "TestPlayer (ID:12345) [Tribe:TestTribe]");
+        assert_eq!(
+            format!("{}", player),
+            "TestPlayer (ID:12345) [Tribe:TestTribe]"
+        );
     }
 
     #[test]
@@ -384,7 +394,8 @@ Total players connected: 3"#;
 
     #[test]
     fn test_parse_player_list_with_whitespace() {
-        let output = "  PlayerName1 (ID:12345) (Tribe:TribeName1)  \n  \n  PlayerName2 (ID:67890)  ";
+        let output =
+            "  PlayerName1 (ID:12345) (Tribe:TribeName1)  \n  \n  PlayerName2 (ID:67890)  ";
         let players = parse_player_list(output);
         assert_eq!(players.len(), 2);
     }

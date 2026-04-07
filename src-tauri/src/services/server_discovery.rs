@@ -8,10 +8,8 @@ use std::path::{Path, PathBuf};
 use tracing::{debug, info, warn};
 
 /// Default ARK server installation paths on Windows.
-const DEFAULT_ARK_EXE: &str =
-    r#"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries\Win64\ShooterGameServer.exe"#;
-const DEFAULT_STEAMCMD: &str =
-    r#"C:\Program Files (x86)\Steam\steamapps\common\ARK\Engine\Binaries\ThirdParty\SteamCMD\steamcmd.exe"#;
+const DEFAULT_ARK_EXE: &str = r#"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries\Win64\ShooterGameServer.exe"#;
+const DEFAULT_STEAMCMD: &str = r#"C:\Program Files (x86)\Steam\steamapps\common\ARK\Engine\Binaries\ThirdParty\SteamCMD\steamcmd.exe"#;
 
 /// Represents a discovered ARK server installation.
 /// Contains paths to the key binaries and the base install directory.
@@ -113,9 +111,7 @@ pub fn discover_server_install() -> Result<ServerInstall, DiscoveryError> {
 
     // Determine which executable is missing for better guidance
     if !ark_exists && !steamcmd_exists {
-        warn!(
-            "Neither ARK exe nor SteamCMD found at default locations"
-        );
+        warn!("Neither ARK exe nor SteamCMD found at default locations");
         return Err(DiscoveryError::InstallNotFound {
             guidance: "ARK server files not found. Please ensure SteamCMD has downloaded the ARK server files, or use a custom server_install_path in your profile.".to_string(),
             missing_executable: "ShooterGameServer.exe AND steamcmd.exe".to_string(),
@@ -147,7 +143,11 @@ pub fn discover_server_install() -> Result<ServerInstall, DiscoveryError> {
         .map(PathBuf::from)
         .unwrap_or_else(|| {
             // Fallback: go up 4 levels from Win64\ShooterGameServer.exe
-            ark_exe_path.ancestors().nth(3).map(PathBuf::from).unwrap_or_default()
+            ark_exe_path
+                .ancestors()
+                .nth(3)
+                .map(PathBuf::from)
+                .unwrap_or_default()
         });
 
     let install = ServerInstall {
@@ -192,12 +192,14 @@ pub fn resolve_ark_exe(profile: &crate::models::Profile) -> Result<PathBuf, Disc
         }
 
         // Check if it's ShooterGameServer.exe or a parent directory
-        let exe_path = if custom_path.file_name().is_some_and(|n| n == "ShooterGameServer.exe") {
+        let exe_path = if custom_path
+            .file_name()
+            .is_some_and(|n| n == "ShooterGameServer.exe")
+        {
             custom_path.clone()
         } else {
             // Assume it's a directory - look for the exe inside
-            custom_path
-                .join("ShooterGame\\Binaries\\Win64\\ShooterGameServer.exe")
+            custom_path.join("ShooterGame\\Binaries\\Win64\\ShooterGameServer.exe")
         };
 
         if path_is_valid(&exe_path) {
@@ -220,10 +222,7 @@ pub fn resolve_ark_exe(profile: &crate::models::Profile) -> Result<PathBuf, Disc
 }
 
 /// Validates the server installation for a given profile name.
-pub fn validate_install_for_profile(
-    profile_name: &str,
-    profiles_dir: PathBuf,
-) -> ValidationResult {
+pub fn validate_install_for_profile(profile_name: &str, profiles_dir: PathBuf) -> ValidationResult {
     let profile_path = profiles_dir.join(format!("{}.json", profile_name));
 
     if !profile_path.exists() {

@@ -79,7 +79,11 @@ impl std::fmt::Display for StartError {
                 write!(f, "Failed to spawn server process: {}", reason)
             }
             StartError::AlreadyRunning { name, pid } => {
-                write!(f, "Server for profile '{}' is already running (PID: {})", name, pid)
+                write!(
+                    f,
+                    "Server for profile '{}' is already running (PID: {})",
+                    name, pid
+                )
             }
         }
     }
@@ -136,9 +140,8 @@ pub struct ConsoleLine {
 
 /// ANSI escape code stripping regex.
 /// Matches common ANSI escape sequences including colors and cursor movement.
-static ANSI_ESCAPE_REGEX: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r"(\x1b\x9b)|\x1b[()#;?]*[0-9A-ORZcf-nqry=>]").unwrap()
-});
+static ANSI_ESCAPE_REGEX: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r"(\x1b\x9b)|\x1b[()#;?]*[0-9A-ORZcf-nqry=>]").unwrap());
 
 /// Strips ANSI escape codes from a string.
 pub fn strip_ansi(input: &str) -> String {
@@ -254,10 +257,7 @@ pub fn check_process_status(profile_name: &str) -> bool {
             // On Windows, the process name might be "ShooterGameServer.exe"
             // We can't directly get the command line args from sysinfo easily,
             // so we check if the PID matches what we have stored
-            if let Some(handle) = SERVER_STATE
-                .blocking_lock()
-                .get_handle(profile_name)
-            {
+            if let Some(handle) = SERVER_STATE.blocking_lock().get_handle(profile_name) {
                 if pid.as_u32() == handle.pid {
                     debug!(
                         "Process check: profile '{}' found with PID {}",
@@ -269,7 +269,10 @@ pub fn check_process_status(profile_name: &str) -> bool {
         }
     }
 
-    debug!("Process check: no running process found for profile '{}'", profile_name);
+    debug!(
+        "Process check: no running process found for profile '{}'",
+        profile_name
+    );
     false
 }
 
@@ -278,10 +281,13 @@ pub fn check_process_status(profile_name: &str) -> bool {
 /// Uses TCP connect to `127.0.0.1:{port}` with a 500ms timeout.
 pub fn check_port_status(port: u16) -> bool {
     let addr = format!("127.0.0.1:{}", port);
-    match TcpStream::connect_timeout(&addr.parse().unwrap_or_else(|_| {
-        warn!("Invalid port address: {}", port);
-        std::net::SocketAddr::from(([127, 0, 0, 1], port))
-    }), Duration::from_millis(500)) {
+    match TcpStream::connect_timeout(
+        &addr.parse().unwrap_or_else(|_| {
+            warn!("Invalid port address: {}", port);
+            std::net::SocketAddr::from(([127, 0, 0, 1], port))
+        }),
+        Duration::from_millis(500),
+    ) {
         Ok(_stream) => {
             debug!("Port check: port {} is open", port);
             true
@@ -351,7 +357,11 @@ impl ServerState {
 
     /// Sets the player list for a profile.
     pub fn set_player_list(&mut self, profile_name: &str, players: Vec<PlayerInfo>) {
-        debug!("Setting player list for profile '{}': {} players", profile_name, players.len());
+        debug!(
+            "Setting player list for profile '{}': {} players",
+            profile_name,
+            players.len()
+        );
         self.player_lists.insert(profile_name.to_string(), players);
     }
 
@@ -364,8 +374,10 @@ impl ServerState {
     pub fn insert(&mut self, profile_name: String, handle: ServerHandle) {
         debug!("Inserting server handle for profile '{}'", profile_name);
         self.servers.insert(profile_name.clone(), handle);
-        self.statuses.insert(profile_name.clone(), ServerStatus::Running);
-        self.previous_statuses.insert(profile_name, ServerStatus::Running);
+        self.statuses
+            .insert(profile_name.clone(), ServerStatus::Running);
+        self.previous_statuses
+            .insert(profile_name, ServerStatus::Running);
     }
 
     /// Updates the status for a profile, tracking the previous status.
@@ -383,7 +395,8 @@ impl ServerState {
             );
             // Store current as previous before updating
             if let Some(ref current) = old_status {
-                self.previous_statuses.insert(profile_name.to_string(), current.clone());
+                self.previous_statuses
+                    .insert(profile_name.to_string(), current.clone());
             }
             self.statuses.insert(profile_name.to_string(), status);
             old_status // Return the old status to indicate a transition occurred
@@ -440,7 +453,13 @@ impl ServerState {
             debug!(
                 "Status detect for '{}': port={}, handle_exists={}, process_alive={}, \
                  port_open={} -> status changed from {:?} to {:?}",
-                profile_name, port, handle_exists, process_alive, port_open, current_status, new_status
+                profile_name,
+                port,
+                handle_exists,
+                process_alive,
+                port_open,
+                current_status,
+                new_status
             );
         }
 
@@ -545,7 +564,11 @@ pub fn start_status_polling(app: tauri::AppHandle) {
 /// This function connects to the ARK server RCON port, sends the PlayerId command,
 /// parses the response, stores it in server state, and emits a Tauri event.
 /// Connection failures are handled gracefully since the server may not be fully started.
-fn poll_player_list(app_handle: &tauri::AppHandle, runtime: &tokio::runtime::Runtime, profile_name: &str) {
+fn poll_player_list(
+    app_handle: &tauri::AppHandle,
+    runtime: &tokio::runtime::Runtime,
+    profile_name: &str,
+) {
     // Load the profile to get admin_password and port
     let (rcon_port, admin_password) = match load_profile(profile_name) {
         Ok(profile) => {
@@ -555,7 +578,11 @@ fn poll_player_list(app_handle: &tauri::AppHandle, runtime: &tokio::runtime::Run
             (rcon_port, password)
         }
         Err(e) => {
-            tracing::debug!("Could not load profile '{}' for player list polling: {}", profile_name, e);
+            tracing::debug!(
+                "Could not load profile '{}' for player list polling: {}",
+                profile_name,
+                e
+            );
             return;
         }
     };
@@ -565,7 +592,8 @@ fn poll_player_list(app_handle: &tauri::AppHandle, runtime: &tokio::runtime::Run
 
     // Run the async RCON operations in the runtime
     let result: Result<Vec<PlayerInfo>, RconConnError> = runtime.block_on(async {
-        let client = match ArkRconClient::new(profile_name.to_string(), addr, &admin_password).await {
+        let client = match ArkRconClient::new(profile_name.to_string(), addr, &admin_password).await
+        {
             Ok(client) => client,
             Err(e) => {
                 tracing::debug!("RCON connection failed for '{}': {}", profile_name, e);
@@ -675,7 +703,9 @@ pub fn load_profile(name: &str) -> Result<crate::models::Profile, StartError> {
     let path = profiles_dir().join(format!("{}.json", name));
 
     if !path.exists() {
-        return Err(StartError::ProfileNotFound { name: name.to_string() });
+        return Err(StartError::ProfileNotFound {
+            name: name.to_string(),
+        });
     }
 
     let contents = std::fs::read_to_string(&path).map_err(|e| {
@@ -741,7 +771,7 @@ mod tests {
 
     #[test]
     fn test_build_server_args_with_extra_settings() {
-        let mut extra_settings = HashMap:: new();
+        let mut extra_settings = HashMap::new();
         extra_settings.insert("ActiveMods".to_string(), "mod1,mod2".to_string());
 
         let profile = Profile {
@@ -808,14 +838,16 @@ mod tests {
     #[test]
     fn test_get_working_directory() {
         let exe_path = PathBuf::from(
-            r"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries\Win64\ShooterGameServer.exe"
+            r"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries\Win64\ShooterGameServer.exe",
         );
 
         let work_dir = get_working_directory(&exe_path);
 
         assert_eq!(
             work_dir,
-            PathBuf::from(r"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries")
+            PathBuf::from(
+                r"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries"
+            )
         );
     }
 
@@ -841,7 +873,10 @@ mod tests {
         let err = StopError::NotRunning {
             name: "TestProfile".to_string(),
         };
-        assert_eq!(format!("{}", err), "No server running for profile 'TestProfile'");
+        assert_eq!(
+            format!("{}", err),
+            "No server running for profile 'TestProfile'"
+        );
 
         let err = StopError::Timeout {
             name: "TestProfile".to_string(),
@@ -891,12 +926,18 @@ mod tests {
         // Change status and verify previous is tracked
         let old_status = state.set_status("TestProfile", ServerStatus::Running);
         assert_eq!(old_status, Some(ServerStatus::Starting));
-        assert_eq!(state.get_previous_status("TestProfile"), Some(ServerStatus::Starting));
+        assert_eq!(
+            state.get_previous_status("TestProfile"),
+            Some(ServerStatus::Starting)
+        );
 
         // Change again
         let old_status = state.set_status("TestProfile", ServerStatus::Crashed);
         assert_eq!(old_status, Some(ServerStatus::Running));
-        assert_eq!(state.get_previous_status("TestProfile"), Some(ServerStatus::Running));
+        assert_eq!(
+            state.get_previous_status("TestProfile"),
+            Some(ServerStatus::Running)
+        );
 
         // Remove should clear previous status
         state.remove("TestProfile");
@@ -919,7 +960,10 @@ mod tests {
 
         // After insert, both current and previous should be Running
         assert_eq!(state.get_status("TestProfile"), ServerStatus::Running);
-        assert_eq!(state.get_previous_status("TestProfile"), Some(ServerStatus::Running));
+        assert_eq!(
+            state.get_previous_status("TestProfile"),
+            Some(ServerStatus::Running)
+        );
     }
 
     #[test]

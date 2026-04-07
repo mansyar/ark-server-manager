@@ -6,8 +6,8 @@ use crate::services::server_discovery::{
 };
 use crate::services::server_state::{
     build_server_args, decode_console_output, get_log_file_path, get_working_directory,
-    load_profile as load_profile_from_state, strip_ansi, ConsoleLine, ServerStatus, ServerHandle,
-    SERVER_STATE, CONSOLE_BUFFER,
+    load_profile as load_profile_from_state, strip_ansi, ConsoleLine, ServerHandle, ServerStatus,
+    CONSOLE_BUFFER, SERVER_STATE,
 };
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
@@ -66,7 +66,8 @@ pub fn list_profiles() -> Result<Vec<ProfileMetadata>, String> {
         })?;
 
         let mut json_contents = String::new();
-        file.read_to_string(&mut json_contents).map_err(|e| e.to_string())?;
+        file.read_to_string(&mut json_contents)
+            .map_err(|e| e.to_string())?;
 
         match serde_json::from_str::<Profile>(&json_contents) {
             Ok(p) => {
@@ -202,8 +203,8 @@ pub async fn start_server(profile_name: String, app: AppHandle) -> Result<Server
     let profile = load_profile_from_state(&profile_name).map_err(|e| e.to_string())?;
 
     // Resolve the ARK executable path
-    let ark_exe_path = crate::services::server_discovery::resolve_ark_exe(&profile)
-        .map_err(|e| e.to_string())?;
+    let ark_exe_path =
+        crate::services::server_discovery::resolve_ark_exe(&profile).map_err(|e| e.to_string())?;
 
     // Build command-line arguments
     let args = build_server_args(&profile);
@@ -413,7 +414,10 @@ pub async fn stop_server(profile_name: String, app: AppHandle) -> Result<(), Str
         state.set_status(&profile_name, ServerStatus::Stopping);
     }
 
-    info!("Stopping server for profile '{}' (PID: {})", profile_name, handle.pid);
+    info!(
+        "Stopping server for profile '{}' (PID: {})",
+        profile_name, handle.pid
+    );
 
     // Attempt graceful shutdown via taskkill /PID {pid} (SIGTERM equivalent)
     // ARK doesn't have a clean RCON DoExit via command line, so we use taskkill
@@ -442,7 +446,13 @@ pub async fn stop_server(profile_name: String, app: AppHandle) -> Result<(), Str
     let wait_result = tokio::time::timeout(
         tokio::time::Duration::from_secs(5),
         tokio::process::Command::new("powershell")
-            .args(["-Command", &format!("Get-Process -Id {} -ErrorAction SilentlyContinue", handle.pid)])
+            .args([
+                "-Command",
+                &format!(
+                    "Get-Process -Id {} -ErrorAction SilentlyContinue",
+                    handle.pid
+                ),
+            ])
             .output(),
     )
     .await;
@@ -498,10 +508,7 @@ pub async fn get_server_status(profile_name: String) -> ServerStatus {
     let (status, _changed) = {
         let state = SERVER_STATE.lock().await;
         // Get port from handle if exists, otherwise use 0 for port check (will fail)
-        let port = state
-            .get_handle(&profile_name)
-            .map(|h| h.port)
-            .unwrap_or(0);
+        let port = state.get_handle(&profile_name).map(|h| h.port).unwrap_or(0);
         state.detect_status(&profile_name, port)
     };
     status

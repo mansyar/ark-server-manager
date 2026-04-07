@@ -77,7 +77,9 @@ pub fn ini_to_profile(
                         continue;
                     }
                     if let Some(ref v_str) = v {
-                        profile.extra_user_settings.insert(k.to_string(), v_str.clone());
+                        profile
+                            .extra_user_settings
+                            .insert(k.to_string(), v_str.clone());
                     }
                 }
             }
@@ -93,8 +95,16 @@ pub fn profile_to_game_ini(profile: &Profile) -> String {
     let section_name = SECTION_SERVER_SETTINGS;
 
     // Core fields
-    ini.set(section_name, "DifficultyOffset", Some(profile.difficulty.to_string()));
-    ini.set(section_name, "MaxPlayers", Some(profile.max_players.to_string()));
+    ini.set(
+        section_name,
+        "DifficultyOffset",
+        Some(profile.difficulty.to_string()),
+    );
+    ini.set(
+        section_name,
+        "MaxPlayers",
+        Some(profile.max_players.to_string()),
+    );
     ini.set(section_name, "Akset_MapName", Some(profile.map.clone()));
 
     // Extra raw settings
@@ -136,8 +146,8 @@ pub fn read_profile_from_ini_dir(
 
     // Parse Game.ini
     if game_ini_path.exists() {
-        let contents =
-            std::fs::read_to_string(game_ini_path).map_err(|e| format!("Failed to read Game.ini: {}", e))?;
+        let contents = std::fs::read_to_string(game_ini_path)
+            .map_err(|e| format!("Failed to read Game.ini: {}", e))?;
         base.name = std::path::Path::new(game_ini_path)
             .parent()
             .and_then(|p| p.file_name())
