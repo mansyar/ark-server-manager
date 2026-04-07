@@ -1,3 +1,5 @@
+pub mod commands;
+pub mod models;
 use std::fs;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
@@ -34,6 +36,12 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![
+            crate::commands::list_profiles,
+            crate::commands::load_profile,
+            crate::commands::save_profile,
+            crate::commands::delete_profile,
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
