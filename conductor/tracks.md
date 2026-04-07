@@ -12,7 +12,7 @@ Tracks are major phases of development. Each track has its own plan and working 
 ### Completed Tracks
 
 - [x] **Phase 2 — Server Lifecycle Management:** Start/stop ARK servers, live console output, RCON player list
-  *Link: [./conductor/tracks/phase2_server_lifecycle_20260408/](./conductor/tracks/phase2_server_lifecycle_20260408/)*
+  *Link: [./conductor/archive/phase2_server_lifecycle_20260408/](./conductor/archive/phase2_server_lifecycle_20260408/)*
   *(Archived)*
 
 - [x] **Phase 1 — Server Profile Management:** Profile creation wizard, visual + raw INI editor (split view), JSON storage, CRUD, validation
