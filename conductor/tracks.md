@@ -7,7 +7,7 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ## Track Listing
 
-- [~] **Phase 1 — Server Profile Management:** Profile creation wizard, visual + raw INI editor (split view), JSON storage, CRUD, validation
+- [x] **Phase 1 — Server Profile Management:** Profile creation wizard, visual + raw INI editor (split view), JSON storage, CRUD, validation
   *Link: [./conductor/tracks/phase1_server_profile_mgmt_20260408/](./conductor/tracks/phase1_server_profile_mgmt_20260408/)*
 
 ---
