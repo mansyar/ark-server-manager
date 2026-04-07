@@ -90,7 +90,7 @@
 
 ## Phase 1.10: Finalize
 
-- [ ] **1.10.1** Verify all acceptance criteria in `spec.md`
-- [ ] **1.10.2** Commit with `feat(phase1): Implement server profile management`
-- [ ] **1.10.3** Attach task summary as git note
-- [ ] **1.10.4** Update this plan: mark all tasks `[x]` with commit SHAs
+- [x] **1.10.1** Verify all acceptance criteria in `spec.md`
+- [x] **1.10.2** Commit with `feat(phase1): Implement server profile management`
+- [x] **1.10.3** Attach task summary as git note
+- [x] **1.10.4** Update this plan: mark all tasks `[x]` with commit SHAs
