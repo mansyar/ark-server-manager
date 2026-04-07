@@ -12,7 +12,8 @@ Tracks are major phases of development. Each track has its own plan and working 
 ### Completed Tracks
 
 - [x] **add more tests for src/ and src-tauri/ to achieve project coverage threshold**
-  *Link: [./conductor/tracks/test-coverage-improvement-20250408/](./conductor/tracks/test-coverage-improvement-20250408/)*
+  *Link: [./conductor/archive/test-coverage-improvement-20250408/](./conductor/archive/test-coverage-improvement-20250408/)*
+  *(Archived)*
 
 - [x] **Phase 3 SteamCMD Integration:** SteamCMD integration (server install/update)
   *Link: [./conductor/archive/phase3_steamcmd_integration_20260408/](./conductor/archive/phase3_steamcmd_integration_20260408/)*
