@@ -1,0 +1,11 @@
+{
+  "track_id": "phase0_project_setup_20250408",
+  "created": "2025-04-08",
+  "description": "Phase 0 — Project Setup: Scaffold Tauri 2.x + React 19 + Vite + pnpm project",
+  "status": "pending",
+  "type": "chore",
+  "phases": 10,
+  "tasks": 26,
+  "spec": "./spec.md",
+  "plan": "./plan.md"
+}
