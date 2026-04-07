@@ -52,6 +52,10 @@ pub fn run() {
             crate::commands::validate_install,
             crate::commands::get_console_buffer,
             crate::commands::get_server_status,
+            crate::commands::steam_install::install_server,
+            crate::commands::steam_install::update_server,
+            crate::commands::steam_install::verify_server,
+            crate::commands::steam_install::get_steamcmd_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

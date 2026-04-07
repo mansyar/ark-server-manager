@@ -1,5 +1,7 @@
 //! Profile-related Tauri commands.
 
+pub mod steam_install;
+
 use crate::models::{Profile, ProfileMetadata};
 use crate::services::server_discovery::{
     discover_server_install, validate_install_for_profile, ServerInstall, ValidationResult,

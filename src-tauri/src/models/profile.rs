@@ -55,6 +55,21 @@ pub struct Profile {
     /// Can point to ShooterGameServer.exe directly or to the ARK install root.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub server_install_path: Option<std::path::PathBuf>,
+
+    /// Optional path to SteamCMD binary for this profile.
+    /// If set, this overrides the global SteamCMD detection.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steamcmd_path: Option<std::path::PathBuf>,
+
+    /// Last verified build ID for this profile's server installation.
+    /// Updated after install, update, or verify operations.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_verified_build_id: Option<String>,
+
+    /// Directory where SteamCMD and ARK server files are installed for this profile.
+    /// Should point to the root ARK server install directory (contains ShooterGame/Binaries/Win64).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub steamcmd_install_dir: Option<std::path::PathBuf>,
 }
 
 impl Default for Profile {
@@ -70,6 +85,9 @@ impl Default for Profile {
             extra_settings: HashMap::new(),
             extra_user_settings: HashMap::new(),
             server_install_path: None,
+            steamcmd_path: None,
+            last_verified_build_id: None,
+            steamcmd_install_dir: None,
         }
     }
 }
