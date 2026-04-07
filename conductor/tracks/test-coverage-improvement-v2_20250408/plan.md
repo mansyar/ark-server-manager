@@ -14,32 +14,32 @@
 - [ ] 2.2 Write tests for `initListeners` (mock Tauri events)
 - [ ] 2.3 Write tests for `cleanupListeners`
 - [ ] 2.4 Write tests for `getStatus`
-- [ ] 2.5 Write tests for `refreshStatus` (success + error paths)
-- [ ] 2.6 Write tests for `startServer` (success + error paths)
-- [ ] 2.7 Write tests for `stopServer` (success + error paths)
-- [ ] 2.8 Write tests for `restartServer`
-- [ ] 2.9 Write tests for `validateInstall` (success + error paths)
-- [ ] 2.10 Write tests for `getConsoleBuffer` (success + error paths)
-- [ ] 2.11 Write tests for `clearConsoleBuffer`
-- [ ] 2.12 Write tests for `addConsoleLine` (with existing buffer, without buffer)
-- [ ] 2.13 Write tests for `getPlayers`
-- [ ] 2.14 Write tests for `setActiveServerProfile`
-- [ ] 2.15 Write tests for all event handlers (server-started, server-stopped, status-changed, server-crashed, console-output, player-list-updated)
-- [ ] 2.16 Run tests, verify all pass
-- [ ] 2.17 Verify coverage >80% for serverLifecycleStore
+- [x] 2.5 Write tests for `refreshStatus` (success + error paths)
+- [x] 2.6 Write tests for `startServer` (success + error paths)
+- [x] 2.7 Write tests for `stopServer` (success + error paths)
+- [x] 2.8 Write tests for `restartServer`
+- [x] 2.9 Write tests for `validateInstall` (success + error paths)
+- [x] 2.10 Write tests for `getConsoleBuffer` (success + error paths)
+- [x] 2.11 Write tests for `clearConsoleBuffer`
+- [x] 2.12 Write tests for `addConsoleLine` (with existing buffer, without buffer)
+- [x] 2.13 Write tests for `getPlayers`
+- [x] 2.14 Write tests for `setActiveServerProfile`
+- [x] 2.15 Write tests for all event handlers (server-started, server-stopped, status-changed, server-crashed, console-output, player-list-updated)
+- [x] 2.16 Run tests, verify all pass
+- [x] 2.17 Verify coverage >80% for serverLifecycleStore
 
 ## Phase 3: profilesStore Tests
 
-- [ ] 3.1 Create `src/stores/__tests__/profilesStore.test.ts`
-- [ ] 3.2 Write tests for `loadProfiles` (success + error paths)
-- [ ] 3.3 Write tests for `createProfile` (success + error paths)
-- [ ] 3.4 Write tests for `updateProfile` (success + error paths)
-- [ ] 3.5 Write tests for `deleteProfile` (success + error paths)
-- [ ] 3.6 Write tests for `setActiveProfile`
-- [ ] 3.7 Write tests for `setWizardOpen`
-- [ ] 3.8 Write tests for `setEditorOpen`
-- [ ] 3.9 Run tests, verify all pass
-- [ ] 3.10 Verify coverage >80% for profilesStore
+- [x] 3.1 Create `src/stores/__tests__/profilesStore.test.ts`
+- [x] 3.2 Write tests for `loadProfiles` (success + error paths)
+- [x] 3.3 Write tests for `createProfile` (success + error paths)
+- [x] 3.4 Write tests for `updateProfile` (success + error paths)
+- [x] 3.5 Write tests for `deleteProfile` (success + error paths)
+- [x] 3.6 Write tests for `setActiveProfile`
+- [x] 3.7 Write tests for `setWizardOpen`
+- [x] 3.8 Write tests for `setEditorOpen`
+- [x] 3.9 Run tests, verify all pass
+- [x] 3.10 Verify coverage >80% for profilesStore
 
 ## Phase 4: Type Tests (server.ts)
 

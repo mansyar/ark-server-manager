@@ -137,4 +137,73 @@ describe('profilesStore', () => {
       expect(useProfilesStore.getState().editorOpen).toBe(true);
     });
   });
+
+  describe('updateProfile', () => {
+    it('updates profile successfully', async () => {
+      vi.mocked(invoke).mockResolvedValueOnce(undefined).mockResolvedValueOnce([]);
+
+      const updatedProfile = {
+        schema_version: 1,
+        name: 'TestServer',
+        map: 'TheIsland',
+        difficulty: 1.0,
+        max_players: 70,
+        admin_password: null,
+        port: 27015,
+        server_install_path: null,
+        extra_settings: {},
+        extra_user_settings: {},
+      };
+
+      await useProfilesStore.getState().updateProfile(updatedProfile);
+
+      const state = useProfilesStore.getState();
+      expect(state.activeProfile).toEqual(updatedProfile);
+    });
+
+    it('handles update error', async () => {
+      vi.mocked(invoke).mockRejectedValue(new Error('Update failed'));
+
+      const profile = {
+        schema_version: 1,
+        name: 'TestServer',
+        map: 'TheIsland',
+        difficulty: 1.0,
+        max_players: 70,
+        admin_password: null,
+        port: 27015,
+        server_install_path: null,
+        extra_settings: {},
+        extra_user_settings: {},
+      };
+
+      await useProfilesStore.getState().updateProfile(profile);
+
+      const state = useProfilesStore.getState();
+      expect(state.error).toBe('Error: Update failed');
+      expect(state.isLoading).toBe(false);
+    });
+  });
+
+  describe('deleteProfile', () => {
+    it('deletes profile successfully', async () => {
+      vi.mocked(invoke).mockResolvedValueOnce(undefined).mockResolvedValueOnce([]);
+
+      await useProfilesStore.getState().deleteProfile('TestServer');
+
+      const state = useProfilesStore.getState();
+      expect(state.activeProfile).toBeNull();
+      expect(state.editorOpen).toBe(false);
+    });
+
+    it('handles delete error', async () => {
+      vi.mocked(invoke).mockRejectedValue(new Error('Delete failed'));
+
+      await useProfilesStore.getState().deleteProfile('TestServer');
+
+      const state = useProfilesStore.getState();
+      expect(state.error).toBe('Error: Delete failed');
+      expect(state.isLoading).toBe(false);
+    });
+  });
 });
