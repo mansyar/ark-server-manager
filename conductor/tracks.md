@@ -9,8 +9,8 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
-- [x] **Track: setup test coverage for typescript and rust**
-  *Link: [./conductor/tracks/test-coverage-ts-rust/](./conductor/tracks/test-coverage-ts-rust/)*
+- [~] **Track: add more tests for src/ and src-tauri/** ⬅️ CURRENT TRACK
+  *Link: [./conductor/tracks/test-coverage-improvement-20250408/](./conductor/tracks/test-coverage-improvement-20250408/)*
 
 ### Completed Tracks
 
