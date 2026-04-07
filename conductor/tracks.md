@@ -7,7 +7,8 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ## Track Listing
 
-*(No tracks defined yet — use `conductor-new-track` to create the first one)*
+- [ ] **Phase 0 — Project Setup:** Scaffold Tauri 2.x + React 19 + Vite + pnpm, configure tooling, logging, dark theme, and verify empty shell builds and runs
+  *Link: [./conductor/tracks/phase0_project_setup_20250408/](./conductor/tracks/phase0_project_setup_20250408/)*
 
 ---
 
