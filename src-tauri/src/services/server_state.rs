@@ -835,6 +835,7 @@ mod tests {
         assert_eq!(state.get_status("TestProfile"), ServerStatus::Stopped);
     }
 
+    #[cfg(windows)]
     #[test]
     fn test_get_working_directory() {
         let exe_path = PathBuf::from(
@@ -848,6 +849,22 @@ mod tests {
             PathBuf::from(
                 r"C:\Program Files (x86)\Steam\steamapps\common\ARK\ShooterGame\Binaries"
             )
+        );
+    }
+
+    #[cfg(not(windows))]
+    #[test]
+    fn test_get_working_directory() {
+        // On non-Windows, test with a Unix-style path
+        let exe_path = PathBuf::from(
+            "/home/steam/steamapps/common/ARK/ShooterGame/Binaries/Win64/ShooterGameServer.exe",
+        );
+
+        let work_dir = get_working_directory(&exe_path);
+
+        assert_eq!(
+            work_dir,
+            PathBuf::from("/home/steam/steamapps/common/ARK/ShooterGame/Binaries")
         );
     }
 
