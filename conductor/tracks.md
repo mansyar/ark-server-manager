@@ -7,8 +7,8 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ## Track Listing
 
-- [x] **Phase 0 — Project Setup:** Scaffold Tauri 2.x + React 19 + Vite + pnpm, configure tooling, logging, dark theme, and verify empty shell builds and runs
-  *Link: [./conductor/tracks/phase0_project_setup_20250408/](./conductor/tracks/phase0_project_setup_20250408/)*
+- [ ] **Phase 1 — Server Profile Management:** Profile creation wizard, visual + raw INI editor (split view), JSON storage, CRUD, validation
+  *Link: [./conductor/tracks/phase1_server_profile_mgmt_20260408/](./conductor/tracks/phase1_server_profile_mgmt_20260408/)*
 
 ---
 

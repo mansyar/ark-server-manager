@@ -1,0 +1,11 @@
+{
+  "track_id": "phase1_server_profile_mgmt_20260408",
+  "created": "2026-04-08",
+  "description": "Phase 1 — Server Profile Management: wizard creation, INI editor (visual/raw/split), JSON storage, validation",
+  "status": "pending",
+  "type": "feature",
+  "phases": 10,
+  "tasks": 41,
+  "spec": "./spec.md",
+  "plan": "./plan.md"
+}
