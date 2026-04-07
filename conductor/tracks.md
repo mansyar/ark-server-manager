@@ -9,14 +9,11 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
-- [ ] **test coverage improvement v2:** add more tests for src/ and src-tauri/ to achieve project coverage threshold
-  *Link: [./conductor/tracks/test-coverage-improvement-v2_20250408/](./conductor/tracks/test-coverage-improvement-v2_20250408/)*
-
 ### Completed Tracks
 
-- [x] **add more tests for src/ and src-tauri/ to achieve project coverage threshold**
-  *Link: [./conductor/archive/test-coverage-improvement-20250408/](./conductor/archive/test-coverage-improvement-20250408/)*
-  *(Archived)*
+- [x] **test coverage improvement v2:** add more tests for src/ and src-tauri/ to achieve project coverage threshold
+  *Link: [./conductor/archive/test-coverage-improvement-v2_20250408/](./conductor/archive/test-coverage-improvement-v2_20250408/)*
+  *(archived)*
 
 - [x] **setup test coverage for typescript and rust**
   *Link: [./conductor/archive/test-coverage-ts-rust/](./conductor/archive/test-coverage-ts-rust/)*
