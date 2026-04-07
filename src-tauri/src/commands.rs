@@ -1,6 +1,7 @@
 //! Profile-related Tauri commands.
 
 use crate::models::{Profile, ProfileMetadata};
+use crate::services::server_discovery::{discover_server_install, validate_install_for_profile, ServerInstall, ValidationResult};
 use std::fs::{self, File};
 use std::io::Read;
 use std::path::PathBuf;
@@ -144,4 +145,21 @@ pub fn delete_profile(name: String) -> Result<(), String> {
 
     info!("Deleted profile: {}", name);
     Ok(())
+}
+
+/// Discovers the ARK server installation at default paths.
+///
+/// Returns `ServerInstall` if both the ARK server exe and SteamCMD are found.
+/// Returns `DiscoveryError::InstallNotFound` with guidance if either is missing.
+#[tauri::command]
+pub fn discover_install() -> Result<ServerInstall, String> {
+    discover_server_install().map_err(|e| e.to_string())
+}
+
+/// Validates the server installation for a given profile name.
+/// Checks that the ARK executable exists (at default or custom path).
+#[tauri::command]
+pub fn validate_install(profile_name: String) -> ValidationResult {
+    let dir = profiles_dir();
+    validate_install_for_profile(&profile_name, dir)
 }

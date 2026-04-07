@@ -49,6 +49,12 @@ pub struct Profile {
     /// Stored under `[GameUserSettings]` in GameUserSettings.ini.
     #[serde(default)]
     pub extra_user_settings: HashMap<String, String>,
+
+    /// Optional path to a custom ARK server installation.
+    /// If set, this overrides the default discovery path.
+    /// Can point to ShooterGameServer.exe directly or to the ARK install root.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub server_install_path: Option<std::path::PathBuf>,
 }
 
 impl Default for Profile {
@@ -63,6 +69,7 @@ impl Default for Profile {
             port: 27015,
             extra_settings: HashMap::new(),
             extra_user_settings: HashMap::new(),
+            server_install_path: None,
         }
     }
 }

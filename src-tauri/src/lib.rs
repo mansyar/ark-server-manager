@@ -1,6 +1,7 @@
 #![deny(clippy::all)]
 pub mod commands;
 pub mod models;
+pub mod services;
 use std::fs;
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
@@ -42,6 +43,8 @@ pub fn run() {
             crate::commands::load_profile,
             crate::commands::save_profile,
             crate::commands::delete_profile,
+            crate::commands::discover_install,
+            crate::commands::validate_install,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
