@@ -1,0 +1,17 @@
+{
+  "track_id": "lint-stage-enhancement_20260408",
+  "description": "Update lint stage with rust code quality check and script to check if files have more than 500 lines of code",
+  "created": "2026-04-08",
+  "status": "active",
+  "type": "feature",
+  "phases": 4,
+  "tasks_total": 10,
+  "tasks_completed": 0,
+  "dependencies": [],
+  "artefacts": [
+    "spec.md",
+    "plan.md",
+    "index.md",
+    "scripts/check-file-lines.sh"
+  ]
+}
