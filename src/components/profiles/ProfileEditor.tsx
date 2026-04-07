@@ -110,6 +110,7 @@ function ProfileEditor() {
         max_players: formData.maxPlayers,
         admin_password: formData.adminPassword || null,
         port: formData.port,
+        server_install_path: activeProfile.server_install_path,
         extra_settings: formData.extraSettings,
         extra_user_settings: formData.extraUserSettings,
       };

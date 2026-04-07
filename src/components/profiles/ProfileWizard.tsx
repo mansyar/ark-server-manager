@@ -186,6 +186,7 @@ function ProfileWizard() {
         max_players: input.maxPlayers,
         admin_password: input.adminPassword,
         port: input.port,
+        server_install_path: null,
         extra_settings: {},
         extra_user_settings: {},
       };

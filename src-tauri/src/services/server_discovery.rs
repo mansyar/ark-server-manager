@@ -4,7 +4,7 @@
 //! and provides validation for user-specified custom paths.
 
 use serde::{Deserialize, Serialize};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use tracing::{debug, info, warn};
 
 /// Default ARK server installation paths on Windows.
@@ -74,7 +74,7 @@ fn default_paths() -> (PathBuf, PathBuf) {
 }
 
 /// Checks if a path exists and is a file.
-fn path_is_valid(p: &PathBuf) -> bool {
+fn path_is_valid(p: &Path) -> bool {
     p.exists() && p.is_file()
 }
 
@@ -143,7 +143,7 @@ pub fn discover_server_install() -> Result<ServerInstall, DiscoveryError> {
     // So install_dir should be the ARK root: .../ARK/
     let install_dir = ark_exe_path
         .ancestors()
-        .find(|p| p.file_name().map_or(false, |n| n == "ARK"))
+        .find(|p| p.file_name().is_some_and(|n| n == "ARK"))
         .map(PathBuf::from)
         .unwrap_or_else(|| {
             // Fallback: go up 4 levels from Win64\ShooterGameServer.exe
@@ -192,7 +192,7 @@ pub fn resolve_ark_exe(profile: &crate::models::Profile) -> Result<PathBuf, Disc
         }
 
         // Check if it's ShooterGameServer.exe or a parent directory
-        let exe_path = if custom_path.file_name().map_or(false, |n| n == "ShooterGameServer.exe") {
+        let exe_path = if custom_path.file_name().is_some_and(|n| n == "ShooterGameServer.exe") {
             custom_path.clone()
         } else {
             // Assume it's a directory - look for the exe inside
@@ -328,7 +328,7 @@ mod tests {
         };
         let json = serde_json::to_string(&result).unwrap();
         let parsed: ValidationResult = serde_json::from_str(&json).unwrap();
-        assert_eq!(parsed.is_valid, true);
+        assert!(parsed.is_valid);
         assert_eq!(parsed.message, "All good");
     }
 }

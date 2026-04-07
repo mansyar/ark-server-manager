@@ -6,9 +6,7 @@
 
 use crate::models::Profile;
 use configparser::ini::Ini;
-use std::collections::HashMap;
-use std::io::Write;
-use tracing::{error, info, warn};
+use tracing::info;
 
 /// Key constants for ARK INI sections.
 pub const SECTION_SERVER_SETTINGS: &str = "/script/shootergame/shootreplicationlibrary";
@@ -24,57 +22,63 @@ pub fn ini_to_profile(
     ini_type: &str,
     base_profile: Option<&Profile>,
 ) -> Result<Profile, String> {
-    let ini = Ini::load_from_str(ini_contents).map_err(|e| format!("Failed to parse INI: {}", e))?;
+    let mut ini = Ini::new();
+    ini.read(ini_contents.to_string())
+        .map_err(|e| format!("Failed to parse INI: {}", e))?;
 
     let mut profile = base_profile.cloned().unwrap_or_default();
     profile.schema_version = crate::models::PROFILE_SCHEMA_VERSION;
 
     if ini_type == "game" {
         // --- Game.ini ---
-        if let Some(section) = ini.section(Some(SECTION_SERVER_SETTINGS)) {
-            if let Some(val) = section.get("DifficultyOffset") {
-                if let Ok(v) = val.parse::<f64>() {
-                    profile.difficulty = v;
-                }
+        if let Some(val) = ini.get(SECTION_SERVER_SETTINGS, "DifficultyOffset") {
+            if let Ok(v) = val.parse::<f64>() {
+                profile.difficulty = v;
             }
-            if let Some(val) = section.get("MaxPlayers") {
-                if let Ok(v) = val.parse::<u32>() {
-                    profile.max_players = v;
-                }
+        }
+        if let Some(val) = ini.get(SECTION_SERVER_SETTINGS, "MaxPlayers") {
+            if let Ok(v) = val.parse::<u32>() {
+                profile.max_players = v;
             }
-            if let Some(val) = section.get("Akset_MapName") {
-                profile.map = val.to_string();
-            }
+        }
+        if let Some(val) = ini.get(SECTION_SERVER_SETTINGS, "Akset_MapName") {
+            profile.map = val;
         }
 
         // Extra raw key/values from Game.ini
-        if let Some(section) = ini.section(Some(SECTION_SERVER_SETTINGS)) {
-            for (k, v) in section.iter() {
-                if !["DifficultyOffset", "MaxPlayers", "Akset_MapName"].contains(&k.as_str()) {
-                    profile.extra_settings.insert(k.to_string(), v.to_string());
+        if let Some(val) = ini.get_map() {
+            if let Some(section_map) = val.get(SECTION_SERVER_SETTINGS) {
+                for (k, v) in section_map.iter() {
+                    if ["DifficultyOffset", "MaxPlayers", "Akset_MapName"].contains(&k.as_str()) {
+                        continue;
+                    }
+                    if let Some(ref v_str) = v {
+                        profile.extra_settings.insert(k.to_string(), v_str.clone());
+                    }
                 }
             }
         }
     } else {
         // --- GameUserSettings.ini ---
-        if let Some(section) = ini.section(Some(SECTION_GAME_USER_SETTINGS)) {
-            if let Some(val) = section.get("AdminPassword") {
-                profile.admin_password = Some(val.to_string());
-            }
-            if let Some(val) = section.get("QueryPort") {
-                if let Ok(v) = val.parse::<u32>() {
-                    profile.port = v;
-                }
+        if let Some(val) = ini.get(SECTION_GAME_USER_SETTINGS, "AdminPassword") {
+            profile.admin_password = Some(val);
+        }
+        if let Some(val) = ini.get(SECTION_GAME_USER_SETTINGS, "QueryPort") {
+            if let Ok(v) = val.parse::<u32>() {
+                profile.port = v;
             }
         }
 
         // Extra raw key/values from GameUserSettings.ini
-        if let Some(section) = ini.section(Some(SECTION_GAME_USER_SETTINGS)) {
-            for (k, v) in section.iter() {
-                if !["AdminPassword", "QueryPort"].contains(&k.as_str()) {
-                    profile
-                        .extra_user_settings
-                        .insert(k.to_string(), v.to_string());
+        if let Some(val) = ini.get_map() {
+            if let Some(section_map) = val.get(SECTION_GAME_USER_SETTINGS) {
+                for (k, v) in section_map.iter() {
+                    if ["AdminPassword", "QueryPort"].contains(&k.as_str()) {
+                        continue;
+                    }
+                    if let Some(ref v_str) = v {
+                        profile.extra_user_settings.insert(k.to_string(), v_str.clone());
+                    }
                 }
             }
         }
@@ -89,21 +93,17 @@ pub fn profile_to_game_ini(profile: &Profile) -> String {
     let section_name = SECTION_SERVER_SETTINGS;
 
     // Core fields
-    ini.with_section(section_name)
-        .set("DifficultyOffset", profile.difficulty.to_string())
-        .set("MaxPlayers", profile.max_players.to_string())
-        .set("Akset_MapName", &profile.map);
+    ini.set(section_name, "DifficultyOffset", Some(profile.difficulty.to_string()));
+    ini.set(section_name, "MaxPlayers", Some(profile.max_players.to_string()));
+    ini.set(section_name, "Akset_MapName", Some(profile.map.clone()));
 
     // Extra raw settings
     for (k, v) in &profile.extra_settings {
-        ini.with_section(section_name).set(k, v);
+        ini.set(section_name, k, Some(v.clone()));
     }
 
     // Write to string
-    let mut output = Vec::new();
-    ini.write_to(&mut output)
-        .map_err(|e| format!("Failed to write INI: {}", e))?;
-    String::from_utf8(output).map_err(|e| format!("INI output not UTF-8: {}", e))
+    ini.writes()
 }
 
 /// Converts a `Profile` into a GameUserSettings.ini INI string.
@@ -113,22 +113,18 @@ pub fn profile_to_game_user_settings_ini(profile: &Profile) -> String {
 
     if let Some(ref pw) = profile.admin_password {
         if !pw.is_empty() {
-            ini.with_section(section_name).set("AdminPassword", pw);
+            ini.set(section_name, "AdminPassword", Some(pw.clone()));
         }
     }
-    ini.with_section(section_name)
-        .set("QueryPort", profile.port.to_string());
+    ini.set(section_name, "QueryPort", Some(profile.port.to_string()));
 
     // Extra raw user settings
     for (k, v) in &profile.extra_user_settings {
-        ini.with_section(section_name).set(k, v);
+        ini.set(section_name, k, Some(v.clone()));
     }
 
     // Write to string
-    let mut output = Vec::new();
-    ini.write_to(&mut output)
-        .map_err(|e| format!("Failed to write INI: {}", e))?;
-    String::from_utf8(output).map_err(|e| format!("INI output not UTF-8: {}", e))
+    ini.writes()
 }
 
 /// Reads both INI files from a server install directory and merges them into a `Profile`.
@@ -136,7 +132,7 @@ pub fn read_profile_from_ini_dir(
     game_ini_path: &std::path::Path,
     game_user_settings_ini_path: &std::path::Path,
 ) -> Result<Profile, String> {
-    let base = Profile::default();
+    let mut base = Profile::default();
 
     // Parse Game.ini
     if game_ini_path.exists() {
@@ -168,7 +164,13 @@ pub fn read_profile_from_ini_dir(
 /// Sanitize a profile name to be filename-safe.
 fn sanitize_name_for_filename(name: &str) -> String {
     name.chars()
-        .map(|c| if c.is_alphanumeric() || c == ' ' || c == '-' || c == '_' { c } else { '_' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == ' ' || c == '-' || c == '_' {
+                c
+            } else {
+                '_'
+            }
+        })
         .collect()
 }
 
@@ -178,58 +180,66 @@ mod tests {
 
     #[test]
     fn test_profile_to_game_ini() {
-        let mut profile = Profile::default();
-        profile.name = "TestServer".to_string();
-        profile.map = "ScorchedEarth".to_string();
-        profile.difficulty = 3.0;
-        profile.max_players = 50;
+        let profile = Profile {
+            name: "TestServer".to_string(),
+            map: "ScorchedEarth".to_string(),
+            difficulty: 3.0,
+            max_players: 50,
+            ..Default::default()
+        };
 
         let ini_str = profile_to_game_ini(&profile);
-        let ini = Ini::load_from_str(&ini_str).unwrap();
 
-        let section = ini.section(Some(SECTION_SERVER_SETTINGS)).unwrap();
-        assert_eq!(section.get("DifficultyOffset"), Some(&"3".to_string()));
-        assert_eq!(section.get("MaxPlayers"), Some(&"50".to_string()));
-        assert_eq!(section.get("Akset_MapName"), Some(&"ScorchedEarth".to_string()));
+        // Parse it back using ini_to_profile
+        let parsed = ini_to_profile(&ini_str, "game", None).unwrap();
+        assert_eq!(parsed.difficulty, 3.0);
+        assert_eq!(parsed.max_players, 50);
+        assert_eq!(parsed.map, "ScorchedEarth");
     }
 
     #[test]
     fn test_profile_to_game_user_settings_ini() {
-        let mut profile = Profile::default();
-        profile.name = "TestServer".to_string();
-        profile.admin_password = Some("hunter2".to_string());
-        profile.port = 27015;
+        let profile = Profile {
+            name: "TestServer".to_string(),
+            admin_password: Some("hunter2".to_string()),
+            port: 27015,
+            ..Default::default()
+        };
 
         let ini_str = profile_to_game_user_settings_ini(&profile);
-        let ini = Ini::load_from_str(&ini_str).unwrap();
 
-        let section = ini.section(Some(SECTION_GAME_USER_SETTINGS)).unwrap();
-        assert_eq!(section.get("AdminPassword"), Some(&"hunter2".to_string()));
-        assert_eq!(section.get("QueryPort"), Some(&"27015".to_string()));
+        // Parse it back using ini_to_profile
+        let parsed = ini_to_profile(&ini_str, "user", None).unwrap();
+        assert_eq!(parsed.admin_password, Some("hunter2".to_string()));
+        assert_eq!(parsed.port, 27015);
     }
 
     #[test]
     fn test_ini_to_profile_roundtrip_game() {
-        let mut profile = Profile::default();
-        profile.name = "RoundtripTest".to_string();
-        profile.map = "Ragnarok".to_string();
-        profile.difficulty = 7.0;
-        profile.max_players = 80;
+        let profile = Profile {
+            name: "RoundtripTest".to_string(),
+            map: "Ragnarok".to_string(),
+            difficulty: 7.0,
+            max_players: 80,
+            ..Default::default()
+        };
 
         let ini_str = profile_to_game_ini(&profile);
         let parsed = ini_to_profile(&ini_str, "game", None).unwrap();
 
         assert_eq!(parsed.difficulty, 7.0);
         assert_eq!(parsed.max_players, 80);
-        assert_eq!(parsed.map, "Ragnarok".to_string());
+        assert_eq!(parsed.map, "Ragnarok");
     }
 
     #[test]
     fn test_ini_to_profile_roundtrip_user() {
-        let mut profile = Profile::default();
-        profile.name = "RoundtripTest".to_string();
-        profile.admin_password = Some("securepass".to_string());
-        profile.port = 27010;
+        let profile = Profile {
+            name: "RoundtripTest".to_string(),
+            admin_password: Some("securepass".to_string()),
+            port: 27010,
+            ..Default::default()
+        };
 
         let ini_str = profile_to_game_user_settings_ini(&profile);
         let parsed = ini_to_profile(&ini_str, "user", None).unwrap();

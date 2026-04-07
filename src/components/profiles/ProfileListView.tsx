@@ -4,8 +4,91 @@ import { useProfilesStore } from '@/stores/profilesStore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { ServerControls, statusConfig } from '@/components/server/ServerControls';
+import { useServerStore } from '@/stores/serverLifecycleStore';
 import type { ProfileMetadata, Profile } from '@/types/profile';
 import { invoke } from '@tauri-apps/api/core';
+
+function formatDate(isoString: string): string {
+  try {
+    return new Date(isoString).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  } catch {
+    return isoString;
+  }
+}
+
+interface ProfileCardProps {
+  profile: ProfileMetadata;
+  onEdit: (profile: ProfileMetadata) => void;
+  onDelete: (name: string) => void;
+  onSelect: (name: string) => void;
+}
+
+function ProfileCard({ profile, onEdit, onDelete, onSelect }: ProfileCardProps) {
+  const status = useServerStore((s) => s.status[profile.name] ?? 'Stopped');
+  const statusInfo = statusConfig[status];
+
+  return (
+    <Card
+      className="group relative cursor-pointer hover:border-primary/50 transition-colors"
+      onClick={() => onSelect(profile.name)}>
+      <CardHeader>
+        <div className="flex items-start justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <CardTitle className="truncate">{profile.name}</CardTitle>
+              <span className={statusInfo.color}>{statusInfo.icon}</span>
+            </div>
+            <CardDescription className="mt-1 flex items-center gap-1">
+              <Map className="size-3" />
+              {profile.map}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(profile);
+              }}
+              aria-label="Edit profile">
+              <Pencil className="size-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(profile.name);
+              }}
+              aria-label="Delete profile"
+              className="text-destructive hover:text-destructive">
+              <Trash2 className="size-3.5" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+            <Clock className="size-3" />
+            Last modified: {formatDate(profile.last_modified)}
+          </div>
+          <div onClick={(e) => e.stopPropagation()}>
+            <ServerControls profileName={profile.name} variant="inline" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 function ProfileListView() {
   const {
@@ -19,12 +102,22 @@ function ProfileListView() {
     deleteProfile,
   } = useProfilesStore();
 
+  const { setActiveServerProfile, refreshStatus } = useServerStore();
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [profileToDelete, setProfileToDelete] = useState<string | null>(null);
 
+  // Refresh server status on mount and periodically
   useEffect(() => {
     loadProfiles();
   }, [loadProfiles]);
+
+  useEffect(() => {
+    profiles.forEach((p) => refreshStatus(p.name));
+    const interval = setInterval(() => {
+      profiles.forEach((p) => refreshStatus(p.name));
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [profiles, refreshStatus]);
 
   const handleEditProfile = async (metadata: ProfileMetadata) => {
     try {
@@ -41,23 +134,13 @@ function ProfileListView() {
     setDeleteConfirmOpen(true);
   };
 
+  const handleProfileClick = (name: string) => {
+    setActiveServerProfile(name);
+  };
+
   const handleConfirmDelete = () => {
     if (profileToDelete) {
       deleteProfile(profileToDelete);
-    }
-  };
-
-  const formatDate = (isoString: string) => {
-    try {
-      return new Date(isoString).toLocaleDateString(undefined, {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } catch {
-      return isoString;
     }
   };
 
@@ -111,42 +194,13 @@ function ProfileListView() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {profiles.map((profile) => (
-            <Card key={profile.name} className="group relative">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="min-w-0 flex-1">
-                    <CardTitle className="truncate">{profile.name}</CardTitle>
-                    <CardDescription className="mt-1 flex items-center gap-1">
-                      <Map className="size-3" />
-                      {profile.map}
-                    </CardDescription>
-                  </div>
-                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => handleEditProfile(profile)}
-                      aria-label="Edit profile">
-                      <Pencil className="size-3.5" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon-xs"
-                      onClick={() => handleDeleteClick(profile.name)}
-                      aria-label="Delete profile"
-                      className="text-destructive hover:text-destructive">
-                      <Trash2 className="size-3.5" />
-                    </Button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <Clock className="size-3" />
-                  Last modified: {formatDate(profile.last_modified)}
-                </div>
-              </CardContent>
-            </Card>
+            <ProfileCard
+              key={profile.name}
+              profile={profile}
+              onEdit={handleEditProfile}
+              onDelete={handleDeleteClick}
+              onSelect={handleProfileClick}
+            />
           ))}
         </div>
       )}

@@ -1,10 +1,20 @@
+import { useEffect } from 'react';
 import { useProfilesStore } from '@/stores/profilesStore';
+import { useServerStore } from '@/stores/serverLifecycleStore';
 import { ProfileListView } from '@/components/profiles/ProfileListView';
 import { ProfileWizard } from '@/components/profiles/ProfileWizard';
 import { ProfileEditor } from '@/components/profiles/ProfileEditor';
+import { ServerDetailPanel } from '@/components/server/ServerDetailPanel';
 
 function App() {
   const { wizardOpen, editorOpen } = useProfilesStore();
+  const { initListeners, cleanupListeners, activeServerProfile } = useServerStore();
+
+  // Initialize server event listeners on mount
+  useEffect(() => {
+    initListeners();
+    return () => cleanupListeners();
+  }, [initListeners, cleanupListeners]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -21,6 +31,7 @@ function App() {
 
       {wizardOpen && <ProfileWizard />}
       {editorOpen && <ProfileEditor />}
+      {activeServerProfile && <ServerDetailPanel />}
     </div>
   );
 }

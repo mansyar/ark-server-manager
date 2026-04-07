@@ -8,6 +8,7 @@ export interface Profile {
   max_players: number;
   admin_password: string | null;
   port: number;
+  server_install_path: string | null;
   extra_settings: Record<string, string>;
   extra_user_settings: Record<string, string>;
 }

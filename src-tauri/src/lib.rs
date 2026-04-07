@@ -38,6 +38,12 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .setup(|app| {
+            // Start the background status polling task
+            crate::services::server_state::start_status_polling(app.handle().clone());
+            tracing::info!("Background status polling task started");
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             crate::commands::list_profiles,
             crate::commands::load_profile,
@@ -45,6 +51,8 @@ pub fn run() {
             crate::commands::delete_profile,
             crate::commands::discover_install,
             crate::commands::validate_install,
+            crate::commands::get_console_buffer,
+            crate::commands::get_server_status,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
