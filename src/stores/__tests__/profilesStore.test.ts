@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useProfilesStore } from '../profilesStore';
+import { invoke } from '@tauri-apps/api/core';
 
-// Mock Tauri API
+// Mock Tauri API - must be set up before using vi.mocked
 vi.mock('@tauri-apps/api/core', () => ({
   invoke: vi.fn(),
 }));
@@ -32,37 +33,51 @@ describe('profilesStore', () => {
 
   describe('loadProfiles', () => {
     it('loads profiles successfully', async () => {
-      const mockProfiles = [
+      vi.mocked(invoke).mockResolvedValue([
         { name: 'Server1', map: 'TheIsland', last_modified: '2025-04-08T00:00:00Z' },
-      ];
-      vi.mocked(vi.fn()).mockResolvedValue(mockProfiles);
+      ]);
 
-      // Manually set for test
-      useProfilesStore.setState({ profiles: mockProfiles });
+      await useProfilesStore.getState().loadProfiles();
 
       const state = useProfilesStore.getState();
       expect(state.profiles).toHaveLength(1);
       expect(state.profiles[0].name).toBe('Server1');
+      expect(state.isLoading).toBe(false);
+    });
+
+    it('handles load error', async () => {
+      vi.mocked(invoke).mockRejectedValue(new Error('Failed to load'));
+
+      await useProfilesStore.getState().loadProfiles();
+
+      const state = useProfilesStore.getState();
+      expect(state.error).toBe('Error: Failed to load');
+      expect(state.isLoading).toBe(false);
     });
   });
 
-  describe('setWizardOpen', () => {
-    it('opens wizard', () => {
-      useProfilesStore.getState().setWizardOpen(true);
-      expect(useProfilesStore.getState().wizardOpen).toBe(true);
-    });
+  describe('createProfile', () => {
+    it('creates profile successfully', async () => {
+      // Mock: first call (save_profile) returns undefined, second call (loadProfiles) returns empty array
+      vi.mocked(invoke).mockResolvedValueOnce(undefined).mockResolvedValueOnce([]);
 
-    it('closes wizard', () => {
-      useProfilesStore.setState({ wizardOpen: true });
-      useProfilesStore.getState().setWizardOpen(false);
-      expect(useProfilesStore.getState().wizardOpen).toBe(false);
-    });
-  });
+      const newProfile = {
+        schema_version: 1,
+        name: 'NewServer',
+        map: 'TheIsland',
+        difficulty: 1.0,
+        max_players: 70,
+        admin_password: null,
+        port: 27015,
+        server_install_path: null,
+        extra_settings: {},
+        extra_user_settings: {},
+      };
 
-  describe('setEditorOpen', () => {
-    it('opens editor', () => {
-      useProfilesStore.getState().setEditorOpen(true);
-      expect(useProfilesStore.getState().editorOpen).toBe(true);
+      await useProfilesStore.getState().createProfile(newProfile);
+
+      const state = useProfilesStore.getState();
+      expect(state.wizardOpen).toBe(false);
     });
   });
 
@@ -100,6 +115,26 @@ describe('profilesStore', () => {
       useProfilesStore.setState({ activeProfile: mockProfile });
       useProfilesStore.getState().setActiveProfile(null);
       expect(useProfilesStore.getState().activeProfile).toBeNull();
+    });
+  });
+
+  describe('setWizardOpen', () => {
+    it('opens wizard', () => {
+      useProfilesStore.getState().setWizardOpen(true);
+      expect(useProfilesStore.getState().wizardOpen).toBe(true);
+    });
+
+    it('closes wizard', () => {
+      useProfilesStore.setState({ wizardOpen: true });
+      useProfilesStore.getState().setWizardOpen(false);
+      expect(useProfilesStore.getState().wizardOpen).toBe(false);
+    });
+  });
+
+  describe('setEditorOpen', () => {
+    it('opens editor', () => {
+      useProfilesStore.getState().setEditorOpen(true);
+      expect(useProfilesStore.getState().editorOpen).toBe(true);
     });
   });
 });

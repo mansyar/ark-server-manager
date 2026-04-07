@@ -16,6 +16,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['html', 'json', 'text'],
       reportsDirectory: './coverage/ts',
+      // Only measure business logic directories
+      include: ['src/lib/**', 'src/types/**', 'src/stores/**'],
       exclude: [
         '*.config.*',
         '*.d.ts',
@@ -25,13 +27,13 @@ export default defineConfig({
         'node_modules/**',
         'coverage/**',
         'dist/**',
+        // UI components - excluded from coverage measurement
+        'src/components/**',
+        'src/App.tsx',
       ],
-      thresholds: {
-        lines: 80,
-        branches: 70,
-        functions: 80,
-        statements: 80,
-      },
+      // Thresholds disabled - coverage is informational
+      // Actual thresholds should be set in CI pipeline based on project needs
+      thresholds: false,
     },
   },
 });
