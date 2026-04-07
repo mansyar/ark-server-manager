@@ -3,7 +3,7 @@
 //! Maintains a global HashMap of ProfileName -> ServerHandle for currently
 //! running servers and provides state transition management.
 
-use crate::services::rcon_client::{PlayerInfo, RconConnError};
+use crate::services::rcon_client::{parse_player_list, ArkRconClient, PlayerInfo, RconConnError};
 use chrono::{DateTime, Utc};
 use encoding_rs::WINDOWS_1252;
 use once_cell::sync::Lazy;
@@ -344,6 +344,17 @@ impl ServerState {
         self.previous_statuses.get(profile_name).cloned()
     }
 
+    /// Gets the player list for a profile.
+    pub fn get_player_list(&self, profile_name: &str) -> Option<&Vec<PlayerInfo>> {
+        self.player_lists.get(profile_name)
+    }
+
+    /// Sets the player list for a profile.
+    pub fn set_player_list(&mut self, profile_name: &str, players: Vec<PlayerInfo>) {
+        debug!("Setting player list for profile '{}': {} players", profile_name, players.len());
+        self.player_lists.insert(profile_name.to_string(), players);
+    }
+
     /// Gets the handle for a running server.
     pub fn get_handle(&self, profile_name: &str) -> Option<&ServerHandle> {
         self.servers.get(profile_name)
@@ -447,15 +458,31 @@ impl Default for ServerState {
 pub static SERVER_STATE: std::sync::LazyLock<Mutex<ServerState>> =
     std::sync::LazyLock::new(|| Mutex::new(ServerState::new()));
 
+/// Player list update event payload for Tauri events.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PlayerListUpdatedEvent {
+    pub profile_name: String,
+    pub players: Vec<PlayerInfo>,
+}
+
 /// Starts the background status polling task.
 ///
 /// This task runs every 2 seconds and checks the status of all running servers.
 /// When a status change is detected, it emits a `status-changed` Tauri event.
+///
+/// Additionally, it polls player lists every 10 seconds via RCON and emits
+/// `player-list-updated` events.
 pub fn start_status_polling(app: tauri::AppHandle) {
     let app_handle = app.clone();
 
     std::thread::spawn(move || {
         tracing::info!("Starting background status polling task");
+
+        // Create a Tokio runtime for async RCON operations
+        let runtime = tokio::runtime::Runtime::new()
+            .expect("Failed to create Tokio runtime for player list polling");
+
+        let mut player_poll_counter: u32 = 0;
 
         loop {
             std::thread::sleep(std::time::Duration::from_secs(2));
@@ -468,10 +495,7 @@ pub fn start_status_polling(app: tauri::AppHandle) {
             for profile_name in profile_names {
                 let (new_status, changed) = {
                     let state = SERVER_STATE.blocking_lock();
-                    let port = state
-                        .get_handle(&profile_name)
-                        .map(|h| h.port)
-                        .unwrap_or(0);
+                    let port = state.get_handle(&profile_name).map(|h| h.port).unwrap_or(0);
                     state.detect_status(&profile_name, port)
                 };
 
@@ -505,12 +529,81 @@ pub fn start_status_polling(app: tauri::AppHandle) {
                         }
                     }
                 }
+
+                // Poll player list every 10 seconds (every 5 iterations at 2s intervals)
+                player_poll_counter = player_poll_counter.wrapping_add(1);
+                if player_poll_counter.is_multiple_of(5) {
+                    poll_player_list(&app_handle, &runtime, &profile_name);
+                }
             }
         }
     });
 }
 
-/// Returns the profiles directory path.
+/// Polls the player list for a profile via RCON and emits the result.
+///
+/// This function connects to the ARK server RCON port, sends the PlayerId command,
+/// parses the response, stores it in server state, and emits a Tauri event.
+/// Connection failures are handled gracefully since the server may not be fully started.
+fn poll_player_list(app_handle: &tauri::AppHandle, runtime: &tokio::runtime::Runtime, profile_name: &str) {
+    // Load the profile to get admin_password and port
+    let (rcon_port, admin_password) = match load_profile(profile_name) {
+        Ok(profile) => {
+            // RCON port is QueryPort + 1 (ARK convention)
+            let rcon_port = (profile.port as u16).saturating_add(1);
+            let password = profile.admin_password.unwrap_or_default();
+            (rcon_port, password)
+        }
+        Err(e) => {
+            tracing::debug!("Could not load profile '{}' for player list polling: {}", profile_name, e);
+            return;
+        }
+    };
+
+    // Build the RCON address
+    let addr = std::net::SocketAddr::from(([127, 0, 0, 1], rcon_port));
+
+    // Run the async RCON operations in the runtime
+    let result: Result<Vec<PlayerInfo>, RconConnError> = runtime.block_on(async {
+        let client = match ArkRconClient::new(profile_name.to_string(), addr, &admin_password).await {
+            Ok(client) => client,
+            Err(e) => {
+                tracing::debug!("RCON connection failed for '{}': {}", profile_name, e);
+                return Err(e);
+            }
+        };
+
+        match client.execute("PlayerId").await {
+            Ok(output) => Ok(parse_player_list(&output)),
+            Err(e) => {
+                tracing::debug!("RCON command failed for '{}': {}", profile_name, e);
+                Err(e)
+            }
+        }
+    });
+
+    match result {
+        Ok(players) => {
+            // Store in server state
+            {
+                let mut state = SERVER_STATE.blocking_lock();
+                state.set_player_list(profile_name, players.clone());
+            }
+
+            // Emit the player-list-updated event
+            let event = PlayerListUpdatedEvent {
+                profile_name: profile_name.to_string(),
+                players,
+            };
+            let _ = app_handle.emit("player-list-updated", &event);
+            tracing::debug!("Emitted player-list-updated for profile '{}'", profile_name);
+        }
+        Err(e) => {
+            tracing::debug!("Player list poll failed for '{}': {}", profile_name, e);
+        }
+    }
+}
+
 pub fn profiles_dir() -> PathBuf {
     dirs::data_dir()
         .unwrap_or_else(|| PathBuf::from("."))
