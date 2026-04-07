@@ -101,8 +101,9 @@ pub fn profile_to_game_ini(profile: &Profile) -> String {
 
     // Write to string
     let mut output = Vec::new();
-    ini.write_to(&mut output).unwrap_or_default();
-    String::from_utf8(output).unwrap_or_default()
+    ini.write_to(&mut output)
+        .map_err(|e| format!("Failed to write INI: {}", e))?;
+    String::from_utf8(output).map_err(|e| format!("INI output not UTF-8: {}", e))
 }
 
 /// Converts a `Profile` into a GameUserSettings.ini INI string.
@@ -125,8 +126,9 @@ pub fn profile_to_game_user_settings_ini(profile: &Profile) -> String {
 
     // Write to string
     let mut output = Vec::new();
-    ini.write_to(&mut output).unwrap_or_default();
-    String::from_utf8(output).unwrap_or_default()
+    ini.write_to(&mut output)
+        .map_err(|e| format!("Failed to write INI: {}", e))?;
+    String::from_utf8(output).map_err(|e| format!("INI output not UTF-8: {}", e))
 }
 
 /// Reads both INI files from a server install directory and merges them into a `Profile`.

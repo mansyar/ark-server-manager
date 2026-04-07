@@ -1,3 +1,4 @@
+#![deny(clippy::all)]
 pub mod commands;
 pub mod models;
 use std::fs;
