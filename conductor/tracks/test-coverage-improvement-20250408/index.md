@@ -1,7 +1,7 @@
 # test-coverage-improvement-20250408
 
 **Description:** add more tests for src/ and src-tauri/ to achieve project coverage threshold
-**Status:** [~]
+**Status:** [x]
 **Created:** 2025-04-08T08:23:00Z
 
 ## Artifacts

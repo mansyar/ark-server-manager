@@ -9,10 +9,10 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
-- [~] **Track: add more tests for src/ and src-tauri/** ⬅️ CURRENT TRACK
-  *Link: [./conductor/tracks/test-coverage-improvement-20250408/](./conductor/tracks/test-coverage-improvement-20250408/)*
-
 ### Completed Tracks
+
+- [x] **add more tests for src/ and src-tauri/ to achieve project coverage threshold**
+  *Link: [./conductor/tracks/test-coverage-improvement-20250408/](./conductor/tracks/test-coverage-improvement-20250408/)*
 
 - [x] **Phase 3 SteamCMD Integration:** SteamCMD integration (server install/update)
   *Link: [./conductor/archive/phase3_steamcmd_integration_20260408/](./conductor/archive/phase3_steamcmd_integration_20260408/)*
