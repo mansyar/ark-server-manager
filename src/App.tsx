@@ -5,10 +5,11 @@ import { ProfileListView } from '@/components/profiles/ProfileListView';
 import { ProfileWizard } from '@/components/profiles/ProfileWizard';
 import { ProfileEditor } from '@/components/profiles/ProfileEditor';
 import { ServerDetailPanel } from '@/components/server/ServerDetailPanel';
+import { CrashDialog } from '@/components/server/CrashDialog';
 
 function App() {
   const { wizardOpen, editorOpen } = useProfilesStore();
-  const { initListeners, cleanupListeners, activeServerProfile } = useServerStore();
+  const { initListeners, cleanupListeners, activeServerProfile, showCrashDialog, crashDialogProfile, closeCrashDialog } = useServerStore();
 
   // Initialize server event listeners on mount
   useEffect(() => {
@@ -32,6 +33,14 @@ function App() {
       {wizardOpen && <ProfileWizard />}
       {editorOpen && <ProfileEditor />}
       {activeServerProfile && <ServerDetailPanel />}
+
+      {/* Crash Dialog */}
+      {showCrashDialog && crashDialogProfile && (
+        <CrashDialog
+          profileName={crashDialogProfile}
+          onClose={closeCrashDialog}
+        />
+      )}
     </div>
   );
 }

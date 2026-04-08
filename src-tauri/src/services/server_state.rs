@@ -307,6 +307,18 @@ pub struct StatusChangedEvent {
     pub new_status: ServerStatus,
 }
 
+/// Crash detection event payload for Tauri events.
+/// Emitted when a server process crashes or exits unexpectedly.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct CrashDetectedEvent {
+    /// Name of the profile that crashed.
+    pub profile_name: String,
+    /// Exit code of the process (if available).
+    pub exit_code: Option<i32>,
+    /// Last 50 lines of console output before the crash.
+    pub last_log_lines: Vec<String>,
+}
+
 /// Global server state tracking running ARK servers.
 ///
 /// Uses a HashMap keyed by profile name, with ServerHandle values.
@@ -544,7 +556,38 @@ pub fn start_status_polling(app: tauri::AppHandle) {
                         // If crashed, emit a specific crash notification event
                         if new_status == ServerStatus::Crashed {
                             tracing::warn!("Server '{}' has crashed!", profile_name);
+
+                            // Get last 50 log lines from the console buffer
+                            let last_log_lines: Vec<String> = {
+                                let buffer = CONSOLE_BUFFER.blocking_lock();
+                                let lines = buffer.get_lines(&profile_name);
+                                // Get the last 50 lines
+                                lines.into_iter().rev().take(50).map(|l| l.line).rev().collect()
+                            };
+
+                            // Emit the detailed crash-detected event
+                            let crash_event = CrashDetectedEvent {
+                                profile_name: profile_name.clone(),
+                                exit_code: None, // Exit code tracking requires additional architecture
+                                last_log_lines,
+                            };
+                            let _ = app_handle.emit("crash-detected", &crash_event);
+
+                            // Also emit the legacy server-crashed event for backwards compatibility
                             let _ = app_handle.emit("server-crashed", &profile_name);
+
+                            // Create and save crash report
+                            let report = crate::crash_report::CrashReport {
+                                timestamp: chrono::Utc::now(),
+                                profile_name: profile_name.clone(),
+                                exit_code: None,
+                                signal: None,
+                                last_log_lines: crash_event.last_log_lines.clone(),
+                                system_info: crate::crash_report::SystemInfo::capture(),
+                            };
+                            if let Err(e) = crate::crash_report::save_crash_report(&report) {
+                                tracing::error!("Failed to save crash report: {}", e);
+                            }
                         }
                     }
                 }

@@ -3,6 +3,7 @@
 pub mod steam_install;
 
 use crate::models::{Profile, ProfileMetadata};
+use crate::services::backup::{create_backup, BackupResult};
 use crate::services::server_discovery::{
     discover_server_install, validate_install_for_profile, ServerInstall, ValidationResult,
 };
@@ -10,6 +11,9 @@ use crate::services::server_state::{
     build_server_args, decode_console_output, get_log_file_path, get_working_directory,
     load_profile as load_profile_from_state, strip_ansi, ConsoleLine, ServerHandle, ServerStatus,
     CONSOLE_BUFFER, SERVER_STATE,
+};
+use crate::services::{
+    notify_backup_completed, notify_server_started, notify_server_stopped,
 };
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
@@ -388,6 +392,9 @@ pub async fn start_server(profile_name: String, app: AppHandle) -> Result<Server
     // Emit server-started event
     let _ = app.emit("server-started", &handle);
 
+    // Send system notification
+    notify_server_started(&app, &profile_name);
+
     Ok(handle)
 }
 
@@ -495,6 +502,9 @@ pub async fn stop_server(profile_name: String, app: AppHandle) -> Result<(), Str
     // Emit server-stopped event
     let _ = app.emit("server-stopped", &profile_name);
 
+    // Send system notification
+    notify_server_stopped(&app, &profile_name);
+
     Ok(())
 }
 
@@ -522,4 +532,83 @@ pub async fn get_server_status(profile_name: String) -> ServerStatus {
 pub async fn get_console_buffer(profile_name: String) -> Vec<ConsoleLine> {
     let buffer = CONSOLE_BUFFER.lock().await;
     buffer.get_lines(&profile_name)
+}
+
+/// Triggers a backup for the given profile.
+///
+/// Loads the profile, resolves the ARK server install directory, creates a
+/// timestamped ZIP backup, enforces the `backup_retention_count`, and returns
+/// a `BackupResult` describing the outcome.
+#[tauri::command]
+pub fn trigger_backup(profile_name: String, app: AppHandle) -> BackupResult {
+    info!("trigger_backup called for profile: {}", profile_name);
+
+    // Load the profile to get backup settings and resolve source dir
+    let profile = match load_profile_from_state(&profile_name) {
+        Ok(p) => p,
+        Err(e) => {
+            error!("Failed to load profile '{}': {}", profile_name, e);
+            return BackupResult {
+                zip_path: None,
+                message: format!("Failed to load profile '{}': {}", profile_name, e),
+                backups_retained: 0,
+            };
+        }
+    };
+
+    // Resolve the ARK server root directory
+    let source_dir = match crate::services::server_discovery::resolve_ark_exe(&profile) {
+        Ok(exe_path) => {
+            // The executable is in ShooterGame/Binaries/Win64, so parent is Win64,
+            // parent's parent is the root ARK install directory
+            exe_path
+                .parent()
+                .and_then(|p| p.parent())
+                .unwrap_or_else(|| exe_path.parent().unwrap_or(&exe_path))
+                .to_path_buf()
+        }
+        Err(e) => {
+            error!(
+                "Failed to resolve ARK executable for profile '{}': {}",
+                profile_name, e
+            );
+            return BackupResult {
+                zip_path: None,
+                message: format!("Failed to resolve ARK install path: {}", e),
+                backups_retained: 0,
+            };
+        }
+    };
+
+    if !source_dir.exists() {
+        error!("ARK server directory {:?} does not exist", source_dir);
+        return BackupResult {
+            zip_path: None,
+            message: format!("ARK server directory does not exist: {:?}", source_dir),
+            backups_retained: 0,
+        };
+    }
+
+    let result = create_backup(
+        &source_dir,
+        &profile.steamcmd_install_dir,
+        &profile.backup_dir,
+        &profile.name,
+        &profile.backup_suffix,
+        profile.backup_retention_count,
+    );
+
+    info!(
+        "Backup result for '{}': {} (retained: {})",
+        profile_name, result.message, result.backups_retained
+    );
+
+    // Send system notification on success
+    if result.zip_path.is_some() {
+        if let Some(ref path) = result.zip_path {
+            notify_backup_completed(&app, &profile_name, &path.to_string_lossy());
+        }
+    }
+
+    result
 }

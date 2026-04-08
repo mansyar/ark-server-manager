@@ -20,6 +20,7 @@ tauri-build = { version = "2", features = [] }
 [dependencies]
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"
+tauri-plugin-notification = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tracing = "0.1"
@@ -41,4 +42,7 @@ zip = "2"
 [dependencies.rcon]
 version = "0.6"
 features = ["rt-tokio"]
+
+[dev-dependencies]
+tempfile = "3"
 

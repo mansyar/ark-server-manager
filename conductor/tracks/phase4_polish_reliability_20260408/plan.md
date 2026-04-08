@@ -75,42 +75,42 @@ Implementation plan for Phase 4 — Polish & Reliability: backup system, error h
 ## Phase C: Error Handling & Logging
 
 ### C1: Implement rolling log files
-- [ ] Configure `tracing-appender` for rolling file output
-- [ ] Implement 10MB size-based rotation
-- [ ] Keep 3 rotated log files
-- [ ] Verify both app logs and server logs rotate correctly
+- [x] Configure `tracing-appender` for rolling file output
+- [x] Implement 10MB size-based rotation
+- [x] Keep 3 rotated log files
+- [x] Verify both app logs and server logs rotate correctly
 
 ### C2: Implement crash detection
-- [ ] Monitor server process exit status in `server.rs`
-- [ ] Detect unexpected exit (non-zero code, not user-initiated stop)
-- [ ] Emit crash event to frontend via Tauri event
-- [ ] Write unit tests for crash detection
+- [x] Monitor server process exit status in `server.rs`
+- [x] Detect unexpected exit (non-zero code, not user-initiated stop)
+- [x] Emit crash event to frontend via Tauri event
+- [x] Write unit tests for crash detection
 
 ### C3: Create crash report storage
-- [ ] Create `crash_report.rs` module
-- [ ] Capture: timestamp, profile name, exit code, last 50 log lines
-- [ ] Serialize to JSON in `crash_reports/` folder
-- [ ] Include system info (OS version, app version)
-- [ ] Write unit tests
+- [x] Create `crash_report.rs` module
+- [x] Capture: timestamp, profile name, exit code, last 50 log lines
+- [x] Serialize to JSON in `crash_reports/` folder
+- [x] Include system info (OS version, app version)
+- [x] Write unit tests
 
 ### C4: Add crash dialog UI
-- [ ] Show modal dialog on crash detection
-- [ ] Display last 50 lines of server log
-- [ ] "View Crash Report" button opens crash JSON
-- [ ] "Open Logs Folder" button opens explorer
-- [ ] Write component tests
+- [x] Show modal dialog on crash detection
+- [x] Display last 50 lines of server log
+- [x] "View Crash Report" button opens crash JSON
+- [x] "Open Logs Folder" button opens explorer
+- [x] Write component tests
 
 ### C5: Add error dialogs per product-guidelines
-- [ ] Port conflict dialog (shows which port, how to change)
-- [ ] Disk space insufficient dialog
-- [ ] Config corruption dialog with restore from backup option
-- [ ] SteamCMD download failure with retry + manual instructions
-- [ ] Write component tests for each
+- [x] Port conflict dialog (shows which port, how to change)
+- [x] Disk space insufficient dialog
+- [x] Config corruption dialog with restore from backup option
+- [x] SteamCMD download failure with retry + manual instructions
+- [x] Write component tests for each
 
 ### C6: Write error handling tests
-- [ ] Test crash detection triggers on unexpected exit
-- [ ] Test crash report contains required fields
-- [ ] Test error dialogs render with correct content
+- [x] Test crash detection triggers on unexpected exit
+- [x] Test crash report contains required fields
+- [x] Test error dialogs render with correct content
 
 ---
 

@@ -70,6 +70,27 @@ pub struct Profile {
     /// Should point to the root ARK server install directory (contains ShooterGame/Binaries/Win64).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub steamcmd_install_dir: Option<std::path::PathBuf>,
+
+    /// Directory where backups for this profile should be stored.
+    /// If None, defaults to `{steamcmd_install_dir}/backups`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub backup_dir: Option<std::path::PathBuf>,
+
+    /// Maximum number of backups to retain for this profile.
+    /// When a new backup is created and this limit is exceeded,
+    /// the oldest backup(s) are deleted. Set to 0 to disable retention enforcement.
+    #[serde(default)]
+    pub backup_retention_count: u32,
+
+    /// Filename suffix used for backup ZIP files.
+    /// The pattern is `{profile_name}_{timestamp}.zip`.
+    /// Defaults to "backup".
+    #[serde(default = "default_backup_suffix")]
+    pub backup_suffix: String,
+}
+
+fn default_backup_suffix() -> String {
+    "backup".to_string()
 }
 
 impl Default for Profile {
@@ -88,6 +109,9 @@ impl Default for Profile {
             steamcmd_path: None,
             last_verified_build_id: None,
             steamcmd_install_dir: None,
+            backup_dir: None,
+            backup_retention_count: 0,
+            backup_suffix: "backup".to_string(),
         }
     }
 }

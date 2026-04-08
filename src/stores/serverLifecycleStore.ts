@@ -9,6 +9,14 @@ import type {
   ValidationResult,
 } from '../types/server';
 
+/// Crash data captured when a server crashes.
+export interface CrashData {
+  profileName: string;
+  exitCode: number | null;
+  lastLogLines: string[];
+  timestamp: Date;
+}
+
 interface ServerState {
   // Per-profile server status
   status: Record<string, ServerStatus>;
@@ -31,6 +39,12 @@ interface ServerState {
   activeServerProfile: string | null;
   // Unlisten functions
   unlisteners: (() => void)[];
+  // Crash data for showing crash dialog
+  crashData: Record<string, CrashData>;
+  // Whether crash dialog is open
+  showCrashDialog: boolean;
+  // Crash dialog profile
+  crashDialogProfile: string | null;
 }
 
 interface ServerActions {
@@ -60,6 +74,10 @@ interface ServerActions {
   getPlayers: (profileName: string) => PlayerInfo[];
   // Set active server profile for detail view
   setActiveServerProfile: (profileName: string | null) => void;
+  // Show crash dialog for a profile
+  showCrashDialogForProfile: (profileName: string) => void;
+  // Close crash dialog
+  closeCrashDialog: () => void;
 }
 
 export const useServerStore = create<ServerState & ServerActions>((set, get) => ({
@@ -74,6 +92,9 @@ export const useServerStore = create<ServerState & ServerActions>((set, get) => 
   errors: {},
   activeServerProfile: null,
   unlisteners: [],
+  crashData: {},
+  showCrashDialog: false,
+  crashDialogProfile: null,
 
   initListeners: async () => {
     const unlisteners: (() => void)[] = [];
@@ -123,6 +144,31 @@ export const useServerStore = create<ServerState & ServerActions>((set, get) => 
           isStopping: { ...state.isStopping, [profile_name]: false },
         }));
       })
+    );
+
+    // Listen for crash-detected with detailed crash information
+    unlisteners.push(
+      await listen<{ profile_name: string; exit_code: number | null; last_log_lines: string[] }>(
+        'crash-detected',
+        (event) => {
+          const { profile_name, exit_code, last_log_lines } = event.payload;
+          const crashData: CrashData = {
+            profileName: profile_name,
+            exitCode: exit_code,
+            lastLogLines: last_log_lines,
+            timestamp: new Date(),
+          };
+          set((state) => ({
+            status: { ...state.status, [profile_name]: 'Crashed' },
+            errors: { ...state.errors, [profile_name]: `Server crashed with exit code ${exit_code ?? 'unknown'}` },
+            isStarting: { ...state.isStarting, [profile_name]: false },
+            isStopping: { ...state.isStopping, [profile_name]: false },
+            crashData: { ...state.crashData, [profile_name]: crashData },
+            showCrashDialog: true,
+            crashDialogProfile: profile_name,
+          }));
+        }
+      )
     );
 
     // Listen for console output
@@ -270,6 +316,14 @@ export const useServerStore = create<ServerState & ServerActions>((set, get) => 
 
   setActiveServerProfile: (profileName) => {
     set({ activeServerProfile: profileName });
+  },
+
+  showCrashDialogForProfile: (profileName) => {
+    set({ showCrashDialog: true, crashDialogProfile: profileName });
+  },
+
+  closeCrashDialog: () => {
+    set({ showCrashDialog: false, crashDialogProfile: null });
   },
 }));
 
