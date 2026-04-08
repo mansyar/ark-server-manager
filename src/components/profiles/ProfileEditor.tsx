@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, Save, Eye, Code, Columns, Map, Users, Lock, Network, Settings, FolderOpen } from 'lucide-react';
+import { X, Save, Eye, Code, Columns, Map, Users, Lock, Network, FolderOpen } from 'lucide-react';
 import { useProfilesStore } from '@/stores/profilesStore';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -7,6 +7,7 @@ import { ARK_MAPS } from '@/types/profile';
 import type { Profile, ArkMap } from '@/types/profile';
 import { difficultySchema, maxPlayersSchema, portSchema } from '@/lib/validation';
 import { PathInput } from '@/components/ui/PathInput';
+import { ExtraSettingsEditor } from './ExtraSettingsEditor';
 
 type EditorTab = 'visual' | 'raw' | 'split';
 
@@ -410,129 +411,12 @@ function ProfileEditor() {
                 </section>
 
                 {/* Extra Settings */}
-                <section>
-                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-4">
-                    <Settings className="size-4" />
-                    Extra Settings
-                  </h3>
-                  <div className="space-y-3">
-                    <p className="text-xs text-muted-foreground">
-                      Additional Game.ini settings (advanced)
-                    </p>
-                    {Object.entries(formData.extraSettings).map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={key}
-                          onChange={(e) => {
-                            const newSettings = { ...formData.extraSettings };
-                            const oldValue = newSettings[key];
-                            delete newSettings[key];
-                            newSettings[e.target.value] = oldValue;
-                            updateField('extraSettings', newSettings);
-                          }}
-                          placeholder="Setting"
-                          className="flex-1 h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <input
-                          type="text"
-                          value={value}
-                          onChange={(e) => {
-                            updateField('extraSettings', {
-                              ...formData.extraSettings,
-                              [key]: e.target.value,
-                            });
-                          }}
-                          placeholder="Value"
-                          className="flex-1 h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => {
-                            const newSettings = { ...formData.extraSettings };
-                            delete newSettings[key];
-                            updateField('extraSettings', newSettings);
-                          }}>
-                          <X className="size-3.5" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newKey = `Setting_${Object.keys(formData.extraSettings).length + 1}`;
-                        updateField('extraSettings', { ...formData.extraSettings, [newKey]: '' });
-                      }}>
-                      Add Setting
-                    </Button>
-                  </div>
-                </section>
-
-                {/* Extra User Settings */}
-                <section>
-                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-4">
-                    <Settings className="size-4" />
-                    Extra User Settings
-                  </h3>
-                  <div className="space-y-3">
-                    <p className="text-xs text-muted-foreground">
-                      Additional GameUserSettings.ini settings (advanced)
-                    </p>
-                    {Object.entries(formData.extraUserSettings).map(([key, value]) => (
-                      <div key={key} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={key}
-                          onChange={(e) => {
-                            const newSettings = { ...formData.extraUserSettings };
-                            const oldValue = newSettings[key];
-                            delete newSettings[key];
-                            newSettings[e.target.value] = oldValue;
-                            updateField('extraUserSettings', newSettings);
-                          }}
-                          placeholder="Setting"
-                          className="flex-1 h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <input
-                          type="text"
-                          value={value}
-                          onChange={(e) => {
-                            updateField('extraUserSettings', {
-                              ...formData.extraUserSettings,
-                              [key]: e.target.value,
-                            });
-                          }}
-                          placeholder="Value"
-                          className="flex-1 h-9 rounded-lg border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          onClick={() => {
-                            const newSettings = { ...formData.extraUserSettings };
-                            delete newSettings[key];
-                            updateField('extraUserSettings', newSettings);
-                          }}>
-                          <X className="size-3.5" />
-                        </Button>
-                      </div>
-                    ))}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        const newKey = `UserSetting_${Object.keys(formData.extraUserSettings).length + 1}`;
-                        updateField('extraUserSettings', {
-                          ...formData.extraUserSettings,
-                          [newKey]: '',
-                        });
-                      }}>
-                      Add User Setting
-                    </Button>
-                  </div>
-                </section>
+                <ExtraSettingsEditor
+                  extraSettings={formData.extraSettings}
+                  extraUserSettings={formData.extraUserSettings}
+                  onExtraSettingsChange={(s) => updateField('extraSettings', s)}
+                  onExtraUserSettingsChange={(s) => updateField('extraUserSettings', s)}
+                />
               </div>
             </div>
           )}

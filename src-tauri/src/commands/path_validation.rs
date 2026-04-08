@@ -27,7 +27,7 @@ pub fn validate_path(path: String, path_type: String) -> PathValidationResult {
 
 fn validate_path_impl(path: &str, path_type: &str) -> PathValidationResult {
     let path = path.trim();
-    
+
     // Handle empty paths - these are valid (will trigger auto-discovery)
     if path.is_empty() {
         return PathValidationResult {
@@ -60,7 +60,10 @@ fn validate_path_impl(path: &str, path_type: &str) -> PathValidationResult {
                 valid: false,
                 exists: true,
                 is_directory: p.is_dir(),
-                hint: format!("Unknown path type '{}'. Use 'server_folder' or 'steamcmd'", path_type),
+                hint: format!(
+                    "Unknown path type '{}'. Use 'server_folder' or 'steamcmd'",
+                    path_type
+                ),
             }
         }
     }
@@ -107,7 +110,9 @@ fn validate_server_folder(p: &Path) -> PathValidationResult {
                 valid: false,
                 exists: true,
                 is_directory: true,
-                hint: "Directory does not contain ShooterGameServer.exe. Is this the ARK server root?".to_string(),
+                hint:
+                    "Directory does not contain ShooterGameServer.exe. Is this the ARK server root?"
+                        .to_string(),
             }
         }
     }

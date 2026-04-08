@@ -1,17 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Check,
-  Map,
-  Users,
-  Lock,
-  Network,
-  Eye,
-  EyeOff,
-  FolderOpen,
-} from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Check, Map, Users, Lock, FolderOpen } from 'lucide-react';
 import { useProfilesStore } from '@/stores/profilesStore';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -27,7 +15,7 @@ import {
 import type { CreateProfileInput } from '@/lib/validation';
 import { PROFILE_SCHEMA_VERSION } from '@/types/profile';
 import type { Profile } from '@/types/profile';
-import { PathInput } from '@/components/ui/PathInput';
+import { WizardSecurityStep, WizardPathsStep, WizardReviewStep } from './WizardSteps';
 
 interface FormData {
   name: string;
@@ -392,159 +380,38 @@ function ProfileWizard() {
 
           {/* Step 3: Security */}
           {step === 3 && (
-            <div className="space-y-6">
-              {/* Admin Password */}
-              <div>
-                <label htmlFor="admin-password" className="block text-sm font-medium mb-1.5">
-                  Admin Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="admin-password"
-                    type={showPassword ? 'text' : 'password'}
-                    value={formData.adminPassword}
-                    onChange={(e) => updateField('adminPassword', e.target.value)}
-                    placeholder="Enter admin password"
-                    className={cn(
-                      'w-full h-9 rounded-lg border bg-background px-3 pr-10 text-sm transition-colors',
-                      'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-                      'placeholder:text-muted-foreground',
-                      errors.adminPassword
-                        ? 'border-destructive ring-1 ring-destructive'
-                        : 'border-input'
-                    )}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}>
-                    {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                  </button>
-                </div>
-                {errors.adminPassword && (
-                  <p className="text-xs text-destructive mt-1">{errors.adminPassword[0]}</p>
-                )}
-              </div>
-
-              {/* Confirm Admin Password */}
-              <div>
-                <label
-                  htmlFor="admin-password-confirm"
-                  className="block text-sm font-medium mb-1.5">
-                  Confirm Admin Password
-                </label>
-                <input
-                  id="admin-password-confirm"
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.adminPasswordConfirm}
-                  onChange={(e) => updateField('adminPasswordConfirm', e.target.value)}
-                  placeholder="Confirm admin password"
-                  className={cn(
-                    'w-full h-9 rounded-lg border bg-background px-3 text-sm transition-colors',
-                    'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-                    'placeholder:text-muted-foreground',
-                    errors.adminPasswordConfirm
-                      ? 'border-destructive ring-1 ring-destructive'
-                      : 'border-input'
-                  )}
-                />
-                {errors.adminPasswordConfirm && (
-                  <p className="text-xs text-destructive mt-1">{errors.adminPasswordConfirm[0]}</p>
-                )}
-              </div>
-
-              {/* Port */}
-              <div>
-                <label htmlFor="port" className="block text-sm font-medium mb-1.5">
-                  <Network className="size-3.5 inline mr-1" />
-                  Server Port
-                </label>
-                <input
-                  id="port"
-                  type="number"
-                  min={27000}
-                  max={27015}
-                  value={formData.port}
-                  onChange={(e) => updateField('port', parseInt(e.target.value, 10) || 27015)}
-                  className={cn(
-                    'w-full h-9 rounded-lg border bg-background px-3 text-sm transition-colors',
-                    'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-                    errors.port ? 'border-destructive ring-1 ring-destructive' : 'border-input'
-                  )}
-                />
-                {errors.port && <p className="text-xs text-destructive mt-1">{errors.port[0]}</p>}
-                <p className="text-xs text-muted-foreground mt-1">
-                  ARK server ports range from 27000 to 27015
-                </p>
-              </div>
-            </div>
+            <WizardSecurityStep
+              adminPassword={formData.adminPassword}
+              adminPasswordConfirm={formData.adminPasswordConfirm}
+              port={formData.port}
+              showPassword={showPassword}
+              errors={errors}
+              onAdminPasswordChange={(v) => updateField('adminPassword', v)}
+              onAdminPasswordConfirmChange={(v) => updateField('adminPasswordConfirm', v)}
+              onPortChange={(v) => updateField('port', v)}
+              onShowPasswordToggle={() => setShowPassword(!showPassword)}
+            />
           )}
 
           {/* Step 4: Install Paths */}
           {step === 4 && (
-            <div className="space-y-6">
-              <div>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Configure the installation paths for your ARK server. Leave empty to auto-detect.
-                </p>
-              </div>
-
-              <PathInput
-                label="ARK Server Folder"
-                value={formData.serverInstallPath}
-                onChange={(value) => updateField('serverInstallPath', value)}
-                pathType="directory"
-                placeholder="C:\ARK Server"
-                hint="Leave empty to auto-detect"
-              />
-
-              <PathInput
-                label="SteamCMD Path"
-                value={formData.steamcmdPath}
-                onChange={(value) => updateField('steamcmdPath', value)}
-                pathType="file"
-                fileFilter="steamcmd.exe"
-                placeholder="C:\steamcmd\steamcmd.exe"
-                hint="Leave empty to auto-detect"
-              />
-            </div>
+            <WizardPathsStep
+              serverInstallPath={formData.serverInstallPath}
+              steamcmdPath={formData.steamcmdPath}
+              onServerInstallPathChange={(v) => updateField('serverInstallPath', v)}
+              onSteamcmdPathChange={(v) => updateField('steamcmdPath', v)}
+            />
           )}
 
           {/* Step 5: Review */}
           {step === 5 && (
-            <div className="space-y-4">
-              <p className="text-sm text-muted-foreground">
-                Please review your profile settings before creating:
-              </p>
-
-              <div className="rounded-lg border bg-muted/50 p-4 space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Profile Name</span>
-                  <span className="text-sm font-medium">{formData.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Map</span>
-                  <span className="text-sm font-medium">{formData.map}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Difficulty</span>
-                  <span className="text-sm font-medium">{formData.difficulty.toFixed(1)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Max Players</span>
-                  <span className="text-sm font-medium">{formData.maxPlayers}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Port</span>
-                  <span className="text-sm font-medium">{formData.port}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Admin Password</span>
-                  <span className="text-sm font-medium">{'•'.repeat(8)}</span>
-                </div>
-              </div>
-            </div>
+            <WizardReviewStep
+              name={formData.name}
+              map={formData.map}
+              difficulty={formData.difficulty}
+              maxPlayers={formData.maxPlayers}
+              port={formData.port}
+            />
           )}
         </div>
 
