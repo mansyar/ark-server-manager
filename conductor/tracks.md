@@ -9,10 +9,11 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
-- [x] **Phase 4 — Polish & Reliability:** backup system, error handling, UI refinement, server health monitoring
-  *Link: [./conductor/tracks/phase4_polish_reliability_20260408/](./conductor/tracks/phase4_polish_reliability_20260408/)*
-
 ### Completed Tracks
+
+- [x] **Phase 4 — Polish & Reliability:** backup system, error handling, UI refinement, server health monitoring
+  *Link: [./conductor/archive/phase4_polish_reliability_20260408/](./conductor/archive/phase4_polish_reliability_20260408/)*
+  *(archived)*
 
 - [x] **test coverage improvement v2:** add more tests for src/ and src-tauri/ to achieve project coverage threshold
   *Link: [./conductor/archive/test-coverage-improvement-v2_20250408/](./conductor/archive/test-coverage-improvement-v2_20250408/)*
