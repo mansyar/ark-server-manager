@@ -12,9 +12,7 @@ use crate::services::server_state::{
     load_profile as load_profile_from_state, strip_ansi, ConsoleLine, ServerHandle, ServerStatus,
     CONSOLE_BUFFER, SERVER_STATE,
 };
-use crate::services::{
-    notify_backup_completed, notify_server_started, notify_server_stopped,
-};
+use crate::services::{notify_backup_completed, notify_server_started, notify_server_stopped};
 use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::PathBuf;

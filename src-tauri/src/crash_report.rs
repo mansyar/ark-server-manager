@@ -161,7 +161,11 @@ impl std::fmt::Display for CrashReportError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             CrashReportError::DirectoryCreationFailed(path, msg) => {
-                write!(f, "Failed to create crash reports directory {:?}: {}", path, msg)
+                write!(
+                    f,
+                    "Failed to create crash reports directory {:?}: {}",
+                    path, msg
+                )
             }
             CrashReportError::SerializationFailed(msg) => {
                 write!(f, "Failed to serialize crash report: {}", msg)
@@ -193,10 +197,7 @@ mod tests {
             profile_name: "TestServer".to_string(),
             exit_code: Some(1),
             signal: None,
-            last_log_lines: vec![
-                "Line 1".to_string(),
-                "Line 2".to_string(),
-            ],
+            last_log_lines: vec!["Line 1".to_string(), "Line 2".to_string()],
             system_info: SystemInfo::capture(),
         };
 

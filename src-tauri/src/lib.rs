@@ -41,11 +41,7 @@ fn setup_logging() {
 
     // Use RollingFileAppender with daily rotation
     // The file size limit is enforced by the OS/file system, but we configure rotation
-    let file_appender = RollingFileAppender::new(
-        Rotation::DAILY,
-        &app_log_dir,
-        "app.log",
-    );
+    let file_appender = RollingFileAppender::new(Rotation::DAILY, &app_log_dir, "app.log");
 
     let (non_blocking, _guard) = tracing_appender::non_blocking(file_appender);
 
@@ -64,10 +60,7 @@ fn setup_logging() {
         .with(fmt::layer().with_writer(non_blocking).with_ansi(false))
         .init();
 
-    tracing::info!(
-        "Logging initialized. App logs directory: {:?}",
-        app_log_dir
-    );
+    tracing::info!("Logging initialized. App logs directory: {:?}", app_log_dir);
 }
 
 /// Returns the server log directory for a specific profile.

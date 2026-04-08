@@ -256,7 +256,10 @@ pub fn start_health_monitoring(app: tauri::AppHandle) {
                     } else {
                         debug!(
                             "Emitted health-update for '{}': CPU={:.1}%, Memory={}MB ({:.1}%)",
-                            profile_name, metrics.cpu_percent, metrics.memory_mb, metrics.memory_percent
+                            profile_name,
+                            metrics.cpu_percent,
+                            metrics.memory_mb,
+                            metrics.memory_percent
                         );
                     }
                 }
@@ -306,7 +309,10 @@ pub async fn handle_auto_restart(
         "Waiting {} seconds before restarting profile '{}'",
         auto_restart_delay_secs, profile_name
     );
-    tokio::time::sleep(tokio::time::Duration::from_secs(auto_restart_delay_secs as u64)).await;
+    tokio::time::sleep(tokio::time::Duration::from_secs(
+        auto_restart_delay_secs as u64,
+    ))
+    .await;
 
     // Record the restart attempt
     {
@@ -332,7 +338,10 @@ pub async fn handle_auto_restart(
 pub async fn mark_restart_success(profile_name: &str) {
     let mut tracker = RESTART_TRACKER.lock().await;
     tracker.record_attempt(profile_name, true);
-    info!("Restart attempt marked as successful for profile '{}'", profile_name);
+    info!(
+        "Restart attempt marked as successful for profile '{}'",
+        profile_name
+    );
 }
 
 #[cfg(test)]

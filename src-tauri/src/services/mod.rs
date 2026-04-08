@@ -6,12 +6,7 @@ use tauri_plugin_notification::NotificationExt;
 ///
 /// Falls back silently if notifications are not permitted or fail.
 pub fn notify(app: &AppHandle, title: &str, body: &str) {
-    let _ = app
-        .notification()
-        .builder()
-        .title(title)
-        .body(body)
-        .show();
+    let _ = app.notification().builder().title(title).body(body).show();
 }
 
 /// Sends a server started notification.
@@ -49,7 +44,10 @@ pub fn notify_crash_detected(app: &AppHandle, profile_name: &str) {
     notify(
         app,
         "ARK Server Crashed",
-        &format!("Server '{}' has crashed. A crash report has been saved.", profile_name),
+        &format!(
+            "Server '{}' has crashed. A crash report has been saved.",
+            profile_name
+        ),
     );
 }
 

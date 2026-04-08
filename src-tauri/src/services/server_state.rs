@@ -562,7 +562,13 @@ pub fn start_status_polling(app: tauri::AppHandle) {
                                 let buffer = CONSOLE_BUFFER.blocking_lock();
                                 let lines = buffer.get_lines(&profile_name);
                                 // Get the last 50 lines
-                                lines.into_iter().rev().take(50).map(|l| l.line).rev().collect()
+                                lines
+                                    .into_iter()
+                                    .rev()
+                                    .take(50)
+                                    .map(|l| l.line)
+                                    .rev()
+                                    .collect()
                             };
 
                             // Emit the detailed crash-detected event

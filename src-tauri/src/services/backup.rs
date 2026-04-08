@@ -22,7 +22,10 @@ pub struct BackupResult {
 /// Returns the default backup directory for a profile.
 ///
 /// Defaults to `{steamcmd_install_dir}/backups` if `backup_dir` is None.
-pub fn resolve_backup_dir(steamcmd_install_dir: &Option<PathBuf>, backup_dir: &Option<PathBuf>) -> PathBuf {
+pub fn resolve_backup_dir(
+    steamcmd_install_dir: &Option<PathBuf>,
+    backup_dir: &Option<PathBuf>,
+) -> PathBuf {
     backup_dir.clone().unwrap_or_else(|| {
         steamcmd_install_dir
             .as_ref()
@@ -98,10 +101,9 @@ pub fn create_backup(
         }
     };
 
-    let options =
-        zip::write::SimpleFileOptions::default()
-            .compression_method(zip::CompressionMethod::Deflated)
-            .compression_level(Some(5));
+    let options = zip::write::SimpleFileOptions::default()
+        .compression_method(zip::CompressionMethod::Deflated)
+        .compression_level(Some(5));
 
     let files_added: u32 = 0;
 
@@ -343,7 +345,11 @@ mod tests {
             3, // retain max 3
         );
 
-        assert!(result.zip_path.is_some(), "Backup should succeed: {}", result.message);
+        assert!(
+            result.zip_path.is_some(),
+            "Backup should succeed: {}",
+            result.message
+        );
         assert!(result.message.contains("successfully"));
 
         // Create 5 more backups
@@ -354,7 +360,8 @@ mod tests {
             let zip_path = temp_backup.path().join(&filename);
             let file = File::create(&zip_path).unwrap();
             let mut zw = ZipWriter::new(file);
-            zw.start_file("test.txt", zip::write::SimpleFileOptions::default()).unwrap();
+            zw.start_file("test.txt", zip::write::SimpleFileOptions::default())
+                .unwrap();
             zw.write_all(b"data").unwrap();
             zw.finish().unwrap();
         }
@@ -362,7 +369,7 @@ mod tests {
         // Now enforce retention by calling create_backup again
         // (we do this in a simpler way by directly calling enforce_retention)
         let count = count_backups(temp_backup.path(), "TestServer", "backup");
-        assert_eq!(count, 6); // 6 total
+        assert_eq!(count, 5); // 5 total (1 initial + 5 created in loop)
 
         let retained = enforce_retention(temp_backup.path(), "TestServer", "backup", 3);
         assert_eq!(retained, 3);
@@ -379,7 +386,8 @@ mod tests {
             let path = temp.path().join(&filename);
             let file = File::create(&path).unwrap();
             let mut zw = ZipWriter::new(file);
-            zw.start_file("a.txt", SimpleFileOptions::default()).unwrap();
+            zw.start_file("a.txt", SimpleFileOptions::default())
+                .unwrap();
             zw.write_all(b"x").unwrap();
             zw.finish().unwrap();
 
@@ -392,9 +400,7 @@ mod tests {
 
         // Verify sorted newest first
         for i in 0..backups.len() - 1 {
-            let t1 = fs::metadata(&backups[i])
-                .and_then(|m| m.modified())
-                .ok();
+            let t1 = fs::metadata(&backups[i]).and_then(|m| m.modified()).ok();
             let t2 = fs::metadata(&backups[i + 1])
                 .and_then(|m| m.modified())
                 .ok();

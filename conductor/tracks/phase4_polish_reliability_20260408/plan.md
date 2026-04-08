@@ -11,64 +11,64 @@ Implementation plan for Phase 4 — Polish & Reliability: backup system, error h
 ## Phase A: Setup & Dependencies
 
 ### A1: Add Rust dependencies
-- [ ] Add `sysinfo` crate to Cargo.toml for system metrics
-- [ ] Add `zip` crate to Cargo.toml for backup compression
-- [ ] Add `tauri-plugin-notification` to Cargo.toml
-- [ ] Verify all dependencies compile
+- [x] Add `sysinfo` crate to Cargo.toml for system metrics
+- [x] Add `zip` crate to Cargo.toml for backup compression
+- [x] Add `tauri-plugin-notification` to Cargo.toml
+- [x] Verify all dependencies compile
 
 ### A2: Configure logging infrastructure
-- [ ] Set up `tracing-subscriber` with file appender in `src-tauri/src/lib.rs`
-- [ ] Configure rolling logs (10MB max, 3 rotations)
-- [ ] Add debug-level application logging
-- [ ] Verify logs written to `%APPDATA%\ArkServerManager\logs\`
+- [x] Set up `tracing-subscriber` with file appender in `src-tauri/src/lib.rs`
+- [x] Configure rolling logs (10MB max, 3 rotations)
+- [x] Add debug-level application logging
+- [x] Verify logs written to `%APPDATA%\ArkServerManager\logs\`
 
 ### A3: Verify build sanity
-- [ ] `cargo build` succeeds with new dependencies
-- [ ] `cargo clippy --all-targets --all-features -- -D warnings` passes
+- [x] `cargo build` succeeds with new dependencies
+- [x] `cargo clippy --all-targets --all-features -- -D warnings` passes
 
 ---
 
 ## Phase B: Backup System
 
 ### B1: Create backup module
-- [ ] Create `src-tauri/src/backup.rs` with backup logic
-- [ ] Implement ZIP creation for `SavedArks/`, `Game.ini`, `GameUserSettings.ini`
-- [ ] Use `zip` crate for compression
-- [ ] Write unit tests for backup creation
+- [x] Create `src-tauri/src/backup.rs` with backup logic
+- [x] Implement ZIP creation for `SavedArks/`, `Game.ini`, `GameUserSettings.ini`
+- [x] Use `zip` crate for compression
+- [x] Write unit tests for backup creation
 
 ### B2: Implement backup scheduler
-- [ ] Add backup interval field to profile JSON schema
-- [ ] Implement tokio-based scheduler (runs in background)
-- [ ] Configurable intervals: 30min, 1hr, 2hr, 4hr, 8hr
-- [ ] Only run while server is running
-- [ ] Write unit tests for scheduler logic
+- [x] Add backup interval field to profile JSON schema
+- [x] Implement tokio-based scheduler (runs in background)
+- [x] Configurable intervals: 30min, 1hr, 2hr, 4hr, 8hr
+- [x] Only run while server is running
+- [x] Write unit tests for scheduler logic
 
 ### B3: Implement retention policy
-- [ ] Count existing backups per profile in backups folder
-- [ ] Delete oldest ZIP when count exceeds retention limit (default: 5)
-- [ ] Configurable retention: 1-20 (default: 5)
-- [ ] Write unit tests for retention enforcement
+- [x] Count existing backups per profile in backups folder
+- [x] Delete oldest ZIP when count exceeds retention limit (default: 5)
+- [x] Configurable retention: 1-20 (default: 5)
+- [x] Write unit tests for retention enforcement
 
 ### B4: Add backup settings to profile store
-- [ ] Add `backup_enabled: bool` to profile schema
-- [ ] Add `backup_interval_minutes: u32` (30, 60, 120, 240, 480)
-- [ ] Add `backup_retention_count: u32` (1-20, default 5)
-- [ ] Add `auto_restart_on_crash: bool` to profile schema
-- [ ] Add `auto_restart_delay_secs: u32` (5-60, default 10)
-- [ ] Add `max_restart_attempts: u32` (default: 3)
-- [ ] Persist to profile JSON files
+- [x] Add `backup_enabled: bool` to profile schema
+- [x] Add `backup_interval_minutes: u32` (30, 60, 120, 240, 480)
+- [x] Add `backup_retention_count: u32` (1-20, default 5)
+- [x] Add `auto_restart_on_crash: bool` to profile schema
+- [x] Add `auto_restart_delay_secs: u32` (5-60, default 10)
+- [x] Add `max_restart_attempts: u32` (default: 3)
+- [x] Persist to profile JSON files
 
 ### B5: Add Backup Now button UI
-- [ ] Add "Backup Now" button to server profile dashboard
-- [ ] Show loading state during backup
-- [ ] Show success toast on completion
-- [ ] Show error dialog on failure
-- [ ] Write component tests
+- [x] Add "Backup Now" button to server profile dashboard
+- [x] Show loading state during backup
+- [x] Show success toast on completion
+- [x] Show error dialog on failure
+- [x] Write component tests
 
 ### B6: Write backup integration tests
-- [ ] Test backup creates ZIP with correct files
-- [ ] Test retention deletes oldest when limit exceeded
-- [ ] Test manual backup respects retention policy
+- [x] Test backup creates ZIP with correct files
+- [x] Test retention deletes oldest when limit exceeded
+- [x] Test manual backup respects retention policy
 
 ---
 
@@ -119,13 +119,13 @@ Implementation plan for Phase 4 — Polish & Reliability: backup system, error h
 ### D1: Update window size constraints
 - [x] Update `src-tauri/tauri.conf.json`: `width: 800` → `width: 900`
 - [x] Add `minWidth: 900, minHeight: 600` to window config
-- [ ] Verify window cannot be resized below minimum
+- [x] Verify window cannot be resized below minimum
 
 ### D2: Implement system tray integration
 - [x] Configure tray icon in `tauri.conf.json`
 - [x] Set up tray icon event handlers
 - [x] Handle `Show Window`, `Start/Stop`, `Exit` menu items
-- [ ] Write Rust integration tests
+- [x] Write Rust integration tests
 
 ### D3: Tray menu functionality
 - [x] "Show Window" — restore and focus main window
@@ -136,88 +136,88 @@ Implementation plan for Phase 4 — Polish & Reliability: backup system, error h
 
 ### D4: Add system notifications
 - [x] Use `tauri-plugin-notification` for server start/stop
-- [ ] Notify on backup completed (Phase B)
+- [x] Notify on backup completed (Phase B)
 - [x] Notify on crash detected
 - [x] Respect Windows Focus Assist settings
-- [ ] Write component tests
+- [x] Write component tests
 
 ### D5: Write UI refinement tests
-- [ ] Test window min size constraint
-- [ ] Test tray menu all options
-- [ ] Test notifications fire correctly
+- [x] Test window min size constraint
+- [x] Test tray menu all options
+- [x] Test notifications fire correctly
 
 ---
 
 ## Phase E: Server Health Monitoring
 
 ### E1: Create health monitoring module
-- [ ] Create `src-tauri/src/health.rs`
-- [ ] Use `sysinfo` crate to get CPU and memory usage
-- [ ] Poll system metrics every 5 seconds
-- [ ] Emit health event to frontend via Tauri event
-- [ ] Write unit tests
+- [x] Create `src-tauri/src/health.rs`
+- [x] Use `sysinfo` crate to get CPU and memory usage
+- [x] Poll system metrics every 5 seconds
+- [x] Emit health event to frontend via Tauri event
+- [x] Write unit tests
 
 ### E2: Poll CPU/memory every 5 seconds
-- [ ] Use tokio interval for polling
-- [ ] Get ARK server process by name
-- [ ] Report CPU % and memory MB/%
-- [ ] Handle case when server process not found
+- [x] Use tokio interval for polling
+- [x] Get ARK server process by name
+- [x] Report CPU % and memory MB/%
+- [x] Handle case when server process not found
 
 ### E3: Implement auto-restart on crash
-- [ ] Track restart attempts with timestamps
-- [ ] Reset counter after 5 minutes of no crashes
-- [ ] Enforce max restart attempts (default: 3)
-- [ ] Show error notification after max attempts reached
-- [ ] Write unit tests for restart logic
+- [x] Track restart attempts with timestamps
+- [x] Reset counter after 5 minutes of no crashes
+- [x] Enforce max restart attempts (default: 3)
+- [x] Show error notification after max attempts reached
+- [x] Write unit tests for restart logic
 
 ### E4: Add health metrics dashboard UI
-- [ ] Display server status badge (Running/Stopped/Starting/Crashed)
-- [ ] Display CPU usage bar
-- [ ] Display Memory usage bar
-- [ ] Display Player count (from RCON or process info)
-- [ ] Display Uptime counter
-- [ ] Write component tests
+- [x] Display server status badge (Running/Stopped/Starting/Crashed)
+- [x] Display CPU usage bar
+- [x] Display Memory usage bar
+- [x] Display Player count (from RCON or process info)
+- [x] Display Uptime counter
+- [x] Write component tests
 
 ### E5: Write health monitoring tests
-- [ ] Test health module reports CPU/memory
-- [ ] Test auto-restart respects max attempts
-- [ ] Test restart delay is enforced
+- [x] Test health module reports CPU/memory
+- [x] Test auto-restart respects max attempts
+- [x] Test restart delay is enforced
 
 ---
 
 ## Phase F: Integration & Polish
 
 ### F1: End-to-end backup flow test
-- [ ] Enable auto-backup on test profile
-- [ ] Wait for scheduled backup
-- [ ] Verify ZIP created with correct contents
-- [ ] Create 6 backups, verify oldest deleted (retention)
+- [x] Enable auto-backup on test profile
+- [x] Wait for scheduled backup
+- [x] Verify ZIP created with correct contents
+- [x] Create 6 backups, verify oldest deleted (retention)
 
 ### F2: End-to-end crash/restart flow test
-- [ ] Enable auto-restart on test profile
-- [ ] Kill server process externally
-- [ ] Verify restart occurs within delay
-- [ ] Crash 4 times, verify 4th does NOT restart
+- [x] Enable auto-restart on test profile
+- [x] Kill server process externally
+- [x] Verify restart occurs within delay
+- [x] Crash 4 times, verify 4th does NOT restart
 
 ### F3: Verify all 12 acceptance criteria
-- [ ] AC1: Auto-backup toggle works
-- [ ] AC2: Manual backup creates ZIP
-- [ ] AC3: Retention enforces max 5
-- [ ] AC4: Crash shows dialog with log lines
-- [ ] AC5: Auto-restart works
-- [ ] AC6: Max restart attempts enforced
-- [ ] AC7: Window min size 900x600
-- [ ] AC8: Close minimizes to tray
-- [ ] AC9: Tray Exit quits app
-- [ ] AC10: Notifications fire
-- [ ] AC11: Health metrics display
-- [ ] AC12: Debug logs written
+- [x] AC1: Auto-backup toggle works
+- [x] AC2: Manual backup creates ZIP
+- [x] AC3: Retention enforces max 5
+- [x] AC4: Crash shows dialog with log lines
+- [x] AC5: Auto-restart works
+- [x] AC6: Max restart attempts enforced
+- [x] AC7: Window min size 900x600
+- [x] AC8: Close minimizes to tray
+- [x] AC9: Tray Exit quits app
+- [x] AC10: Notifications fire
+- [x] AC11: Health metrics display
+- [x] AC12: Debug logs written
 
 ### F4: Final lint and coverage check
-- [ ] `npm run check` passes (lint + type check)
-- [ ] `cargo clippy --all-targets --all-features -- -D warnings` passes
-- [ ] Test coverage >80% on new code
-- [ ] All pre-commit hooks pass
+- [x] `npm run check` passes (lint + type check)
+- [x] `cargo clippy --all-targets --all-features -- -D warnings` passes
+- [x] Test coverage >80% on new code
+- [x] All pre-commit hooks pass
 
 ---
 
@@ -225,10 +225,10 @@ Implementation plan for Phase 4 — Polish & Reliability: backup system, error h
 
 | Phase | Tasks | Status |
 |-------|-------|--------|
-| A: Setup & Dependencies | 3 | [ ] |
-| B: Backup System | 6 | [ ] |
-| C: Error Handling & Logging | 6 | [ ] |
-| D: UI Refinement | 5 | [ ] |
-| E: Server Health Monitoring | 5 | [ ] |
-| F: Integration & Polish | 4 | [ ] |
-| **Total** | **29** | |
+| A: Setup & Dependencies | 3 | [x] |
+| B: Backup System | 6 | [x] |
+| C: Error Handling & Logging | 6 | [x] |
+| D: UI Refinement | 5 | [x] |
+| E: Server Health Monitoring | 5 | [x] |
+| F: Integration & Polish | 4 | [x] |
+| **Total** | **29** | [x] |
