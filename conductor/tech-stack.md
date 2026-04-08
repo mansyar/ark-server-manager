@@ -26,6 +26,9 @@
 | File Operations | serde + serde_json for config files |
 | Logging | tracing + tracing-subscriber |
 | Shell Commands | Rust std::process::Command |
+| System Metrics | sysinfo (CPU, memory monitoring) |
+| Backup Compression | zip crate |
+| Notifications | tauri-plugin-notification |
 
 **Responsibilities:**
 - ARK server process spawning and lifecycle management
@@ -33,6 +36,9 @@
 - SteamCMD invocation and progress tracking
 - Windows Registry / Firewall rule management
 - IPC with React frontend via Tauri commands
+- Health monitoring (CPU, memory, process status)
+- Backup creation with ZIP compression
+- Crash detection and reporting
 
 ---
 
