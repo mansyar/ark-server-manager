@@ -1,0 +1,7 @@
+{
+  "track_id": "profile_path_config_ui_20260408",
+  "description": "Add UI for configuring SteamCMD and ARK server install paths in both the profile wizard and editor",
+  "created": "2026-04-08",
+  "status": "planned",
+  "type": "feature"
+}

@@ -9,6 +9,10 @@ Tracks are major phases of development. Each track has its own plan and working 
 
 ### Active Tracks
 
+- [ ] **Profile Path Config UI:** Add UI for SteamCMD path and ARK server folder in both profile wizard and editor (browse dialog + text input + validation)
+  *Link: [./conductor/tracks/profile_path_config_ui_20260408/](./conductor/tracks/profile_path_config_ui_20260408/)*
+  *(planned)*
+
 ### Completed Tracks
 
 - [x] **Phase 4 — Polish & Reliability:** backup system, error handling, UI refinement, server health monitoring
