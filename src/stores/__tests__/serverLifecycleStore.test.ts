@@ -335,8 +335,10 @@ describe('serverLifecycleStore', () => {
 
   describe('event handler callbacks', () => {
     it('handles server-started event callback', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callbacks: Array<{ eventName: string; handler: (event: any) => void }> = [];
-      vi.mocked(listen).mockImplementation((eventName: string, handler: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(listen).mockImplementation((eventName: string, handler: (event: any) => void) => {
         callbacks.push({ eventName, handler });
         return Promise.resolve(vi.fn());
       });
@@ -363,8 +365,10 @@ describe('serverLifecycleStore', () => {
     });
 
     it('handles server-stopped event callback', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callbacks: Array<{ eventName: string; handler: (event: any) => void }> = [];
-      vi.mocked(listen).mockImplementation((eventName: string, handler: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(listen).mockImplementation((eventName: string, handler: (event: any) => void) => {
         callbacks.push({ eventName, handler });
         return Promise.resolve(vi.fn());
       });
@@ -389,8 +393,10 @@ describe('serverLifecycleStore', () => {
     });
 
     it('handles status-changed event callback', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callbacks: Array<{ eventName: string; handler: (event: any) => void }> = [];
-      vi.mocked(listen).mockImplementation((eventName: string, handler: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(listen).mockImplementation((eventName: string, handler: (event: any) => void) => {
         callbacks.push({ eventName, handler });
         return Promise.resolve(vi.fn());
       });
@@ -409,8 +415,10 @@ describe('serverLifecycleStore', () => {
     });
 
     it('handles server-crashed event callback', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callbacks: Array<{ eventName: string; handler: (event: any) => void }> = [];
-      vi.mocked(listen).mockImplementation((eventName: string, handler: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(listen).mockImplementation((eventName: string, handler: (event: any) => void) => {
         callbacks.push({ eventName, handler });
         return Promise.resolve(vi.fn());
       });
@@ -439,8 +447,10 @@ describe('serverLifecycleStore', () => {
     });
 
     it('handles console-output event callback', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callbacks: Array<{ eventName: string; handler: (event: any) => void }> = [];
-      vi.mocked(listen).mockImplementation((eventName: string, handler: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(listen).mockImplementation((eventName: string, handler: (event: any) => void) => {
         callbacks.push({ eventName, handler });
         return Promise.resolve(vi.fn());
       });
@@ -464,8 +474,10 @@ describe('serverLifecycleStore', () => {
     });
 
     it('handles player-list-updated event callback', async () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const callbacks: Array<{ eventName: string; handler: (event: any) => void }> = [];
-      vi.mocked(listen).mockImplementation((eventName: string, handler: any) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      vi.mocked(listen).mockImplementation((eventName: string, handler: (event: any) => void) => {
         callbacks.push({ eventName, handler });
         return Promise.resolve(vi.fn());
       });
