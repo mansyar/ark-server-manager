@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { X, Save, Eye, Code, Columns, Map, Users, Lock, Network, Settings } from 'lucide-react';
+import { X, Save, Eye, Code, Columns, Map, Users, Lock, Network, Settings, FolderOpen } from 'lucide-react';
 import { useProfilesStore } from '@/stores/profilesStore';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ARK_MAPS } from '@/types/profile';
 import type { Profile, ArkMap } from '@/types/profile';
 import { difficultySchema, maxPlayersSchema, portSchema } from '@/lib/validation';
+import { PathInput } from '@/components/ui/PathInput';
 
 type EditorTab = 'visual' | 'raw' | 'split';
 
@@ -18,6 +19,8 @@ interface EditorFormData {
   port: number;
   extraSettings: Record<string, string>;
   extraUserSettings: Record<string, string>;
+  serverInstallPath: string;
+  steamcmdPath: string;
 }
 
 function ProfileEditor() {
@@ -41,6 +44,8 @@ function ProfileEditor() {
         port: activeProfile.port,
         extraSettings: { ...activeProfile.extra_settings },
         extraUserSettings: { ...activeProfile.extra_user_settings },
+        serverInstallPath: activeProfile.server_install_path ?? '',
+        steamcmdPath: activeProfile.steamcmd_path ?? '',
       });
       setRawJson(JSON.stringify(activeProfile, null, 2));
       setErrors({});
@@ -110,7 +115,8 @@ function ProfileEditor() {
         max_players: formData.maxPlayers,
         admin_password: formData.adminPassword || null,
         port: formData.port,
-        server_install_path: activeProfile.server_install_path,
+        server_install_path: formData.serverInstallPath || null,
+        steamcmd_path: formData.steamcmdPath || null,
         extra_settings: formData.extraSettings,
         extra_user_settings: formData.extraUserSettings,
       };
@@ -138,6 +144,8 @@ function ProfileEditor() {
         port: parsed.port,
         extraSettings: parsed.extra_settings ?? {},
         extraUserSettings: parsed.extra_user_settings ?? {},
+        serverInstallPath: parsed.server_install_path ?? '',
+        steamcmdPath: parsed.steamcmd_path ?? '',
       });
       setErrors({});
     } catch {
@@ -371,6 +379,33 @@ function ProfileEditor() {
                         ARK server ports range from 27000 to 27015
                       </p>
                     </div>
+                  </div>
+                </section>
+
+                {/* Paths */}
+                <section>
+                  <h3 className="text-sm font-semibold flex items-center gap-2 mb-4">
+                    <FolderOpen className="size-4" />
+                    Paths
+                  </h3>
+                  <div className="space-y-4">
+                    <PathInput
+                      label="ARK Server Folder"
+                      value={formData.serverInstallPath}
+                      onChange={(value) => updateField('serverInstallPath', value)}
+                      pathType="directory"
+                      placeholder="C:\ARK Server"
+                      hint="Leave empty to auto-detect"
+                    />
+                    <PathInput
+                      label="SteamCMD Path"
+                      value={formData.steamcmdPath}
+                      onChange={(value) => updateField('steamcmdPath', value)}
+                      pathType="file"
+                      fileFilter="steamcmd.exe"
+                      placeholder="C:\steamcmd\steamcmd.exe"
+                      hint="Leave empty to auto-detect"
+                    />
                   </div>
                 </section>
 

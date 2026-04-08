@@ -1,5 +1,6 @@
 //! Profile-related Tauri commands.
 
+pub mod path_validation;
 pub mod steam_install;
 
 use crate::models::{Profile, ProfileMetadata};

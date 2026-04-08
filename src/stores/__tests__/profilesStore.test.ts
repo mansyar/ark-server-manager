@@ -70,6 +70,7 @@ describe('profilesStore', () => {
         admin_password: null,
         port: 27015,
         server_install_path: null,
+        steamcmd_path: null,
         extra_settings: {},
         extra_user_settings: {},
       };
@@ -92,6 +93,7 @@ describe('profilesStore', () => {
         admin_password: null,
         port: 27015,
         server_install_path: null,
+        steamcmd_path: null,
         extra_settings: {},
         extra_user_settings: {},
       };
@@ -109,6 +111,7 @@ describe('profilesStore', () => {
         admin_password: null,
         port: 27015,
         server_install_path: null,
+        steamcmd_path: null,
         extra_settings: {},
         extra_user_settings: {},
       };
@@ -151,6 +154,7 @@ describe('profilesStore', () => {
         admin_password: null,
         port: 27015,
         server_install_path: null,
+        steamcmd_path: null,
         extra_settings: {},
         extra_user_settings: {},
       };
@@ -173,6 +177,7 @@ describe('profilesStore', () => {
         admin_password: null,
         port: 27015,
         server_install_path: null,
+        steamcmd_path: null,
         extra_settings: {},
         extra_user_settings: {},
       };

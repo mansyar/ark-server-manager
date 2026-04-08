@@ -140,6 +140,7 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
+        .plugin(tauri_plugin_dialog::init())
         .setup(|app| {
             // Set up system tray
             if let Err(e) = setup_tray(app) {
@@ -174,6 +175,7 @@ pub fn run() {
             crate::commands::get_console_buffer,
             crate::commands::get_server_status,
             crate::commands::trigger_backup,
+            crate::commands::path_validation::validate_path,
             crate::commands::steam_install::install_server,
             crate::commands::steam_install::update_server,
             crate::commands::steam_install::verify_server,

@@ -10,6 +10,7 @@ import {
   Network,
   Eye,
   EyeOff,
+  FolderOpen,
 } from 'lucide-react';
 import { useProfilesStore } from '@/stores/profilesStore';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,7 @@ import {
 import type { CreateProfileInput } from '@/lib/validation';
 import { PROFILE_SCHEMA_VERSION } from '@/types/profile';
 import type { Profile } from '@/types/profile';
+import { PathInput } from '@/components/ui/PathInput';
 
 interface FormData {
   name: string;
@@ -35,6 +37,8 @@ interface FormData {
   adminPassword: string;
   adminPasswordConfirm: string;
   port: number;
+  serverInstallPath: string;
+  steamcmdPath: string;
 }
 
 interface FormErrors {
@@ -45,6 +49,8 @@ interface FormErrors {
   adminPassword?: string[];
   port?: string[];
   adminPasswordConfirm?: string[];
+  serverInstallPath?: string[];
+  steamcmdPath?: string[];
 }
 
 const initialFormData: FormData = {
@@ -55,6 +61,8 @@ const initialFormData: FormData = {
   adminPassword: '',
   adminPasswordConfirm: '',
   port: 27015,
+  serverInstallPath: '',
+  steamcmdPath: '',
 };
 
 function ProfileWizard() {
@@ -156,7 +164,7 @@ function ProfileWizard() {
 
   const handleNext = () => {
     if (validateStep(step)) {
-      setStep((s) => Math.min(s + 1, 4));
+      setStep((s) => Math.min(s + 1, 5));
     }
   };
 
@@ -165,7 +173,7 @@ function ProfileWizard() {
   };
 
   const handleSubmit = async () => {
-    if (!validateStep(3)) return;
+    if (!validateStep(5)) return;
 
     setIsSubmitting(true);
     try {
@@ -186,7 +194,8 @@ function ProfileWizard() {
         max_players: input.maxPlayers,
         admin_password: input.adminPassword,
         port: input.port,
-        server_install_path: null,
+        server_install_path: formData.serverInstallPath || null,
+        steamcmd_path: formData.steamcmdPath || null,
         extra_settings: {},
         extra_user_settings: {},
       };
@@ -206,7 +215,8 @@ function ProfileWizard() {
     { number: 1, title: 'Name', icon: Map },
     { number: 2, title: 'Server', icon: Users },
     { number: 3, title: 'Security', icon: Lock },
-    { number: 4, title: 'Review', icon: Check },
+    { number: 4, title: 'Paths', icon: FolderOpen },
+    { number: 5, title: 'Review', icon: Check },
   ];
 
   return (
@@ -230,7 +240,7 @@ function ProfileWizard() {
           <div>
             <h2 className="text-lg font-semibold">Create New Profile</h2>
             <p className="text-sm text-muted-foreground mt-0.5">
-              Step {step} of 4: {steps[step - 1].title}
+              Step {step} of 5: {steps[step - 1].title}
             </p>
           </div>
           <Button
@@ -471,8 +481,38 @@ function ProfileWizard() {
             </div>
           )}
 
-          {/* Step 4: Review */}
+          {/* Step 4: Install Paths */}
           {step === 4 && (
+            <div className="space-y-6">
+              <div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Configure the installation paths for your ARK server. Leave empty to auto-detect.
+                </p>
+              </div>
+
+              <PathInput
+                label="ARK Server Folder"
+                value={formData.serverInstallPath}
+                onChange={(value) => updateField('serverInstallPath', value)}
+                pathType="directory"
+                placeholder="C:\ARK Server"
+                hint="Leave empty to auto-detect"
+              />
+
+              <PathInput
+                label="SteamCMD Path"
+                value={formData.steamcmdPath}
+                onChange={(value) => updateField('steamcmdPath', value)}
+                pathType="file"
+                fileFilter="steamcmd.exe"
+                placeholder="C:\steamcmd\steamcmd.exe"
+                hint="Leave empty to auto-detect"
+              />
+            </div>
+          )}
+
+          {/* Step 5: Review */}
+          {step === 5 && (
             <div className="space-y-4">
               <p className="text-sm text-muted-foreground">
                 Please review your profile settings before creating:
@@ -515,7 +555,7 @@ function ProfileWizard() {
             Back
           </Button>
 
-          {step < 4 ? (
+          {step < 5 ? (
             <Button onClick={handleNext}>
               Next
               <ChevronRight className="size-4 ml-1" />
