@@ -54,7 +54,14 @@ export function PathInput({
           multiple: false,
           title: `Select ${label}`,
           filters: fileFilter
-            ? [{ name: 'Executable', extensions: [fileFilter.replace('*.', '')] }]
+            ? [
+                {
+                  name: 'Executable',
+                  extensions: [
+                    fileFilter.includes('.') ? fileFilter.split('.').pop()! : fileFilter,
+                  ],
+                },
+              ]
             : undefined,
         });
       }
@@ -127,9 +134,7 @@ export function PathInput({
               'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
               'placeholder:text-muted-foreground',
               'disabled:opacity-50 disabled:cursor-not-allowed',
-              isInvalid
-                ? 'border-destructive ring-1 ring-destructive'
-                : 'border-input'
+              isInvalid ? 'border-destructive ring-1 ring-destructive' : 'border-input'
             )}
           />
 
@@ -151,8 +156,7 @@ export function PathInput({
           onClick={handleBrowse}
           disabled={disabled}
           className="h-9 gap-1.5"
-          title={`Browse for ${pathType === 'directory' ? 'folder' : 'file'}`}
-        >
+          title={`Browse for ${pathType === 'directory' ? 'folder' : 'file'}`}>
           <FolderOpen className="size-4" />
           Browse
         </Button>
@@ -166,8 +170,7 @@ export function PathInput({
             onClick={handleClear}
             disabled={disabled}
             className="h-9 w-9"
-            title="Clear and use auto-discovery"
-          >
+            title="Clear and use auto-discovery">
             <X className="size-4" />
           </Button>
         )}
