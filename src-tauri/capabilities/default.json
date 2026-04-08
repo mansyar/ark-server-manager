@@ -6,6 +6,19 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "notification:default"
+    "notification:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-minimize",
+    "core:window:allow-maximize",
+    "core:window:allow-unmaximize",
+    "core:window:allow-set-focus",
+    "core:window:allow-is-visible",
+    "core:tray:default",
+    "core:tray:allow-set-icon",
+    "core:tray:allow-set-menu",
+    "core:tray:allow-set-tooltip",
+    "core:menu:default"
   ]
 }

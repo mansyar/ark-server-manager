@@ -117,28 +117,28 @@ Implementation plan for Phase 4 — Polish & Reliability: backup system, error h
 ## Phase D: UI Refinement
 
 ### D1: Update window size constraints
-- [ ] Update `src-tauri/tauri.conf.json`: `width: 800` → `width: 900`
-- [ ] Add `minWidth: 900, minHeight: 600` to window config
+- [x] Update `src-tauri/tauri.conf.json`: `width: 800` → `width: 900`
+- [x] Add `minWidth: 900, minHeight: 600` to window config
 - [ ] Verify window cannot be resized below minimum
 
 ### D2: Implement system tray integration
-- [ ] Configure tray icon in `tauri.conf.json`
-- [ ] Set up tray icon event handlers
-- [ ] Handle `Show Window`, `Start/Stop`, `Exit` menu items
+- [x] Configure tray icon in `tauri.conf.json`
+- [x] Set up tray icon event handlers
+- [x] Handle `Show Window`, `Start/Stop`, `Exit` menu items
 - [ ] Write Rust integration tests
 
 ### D3: Tray menu functionality
-- [ ] "Show Window" — restore and focus main window
-- [ ] "Start Server" / "Stop Server" — toggle (shows current state)
-- [ ] "Exit" — fully quit application
-- [ ] Tooltip: "ARK Server Manager — {profile-name} ({status})"
-- [ ] Double-click tray icon restores window
+- [x] "Show Window" — restore and focus main window
+- [x] "Start Server" / "Stop Server" — toggle (shows current state)
+- [x] "Exit" — fully quit application
+- [x] Tooltip: "ARK Server Manager — {profile-name} ({status})"
+- [x] Double-click tray icon restores window
 
 ### D4: Add system notifications
-- [ ] Use `tauri-plugin-notification` for server start/stop
-- [ ] Notify on backup completed
-- [ ] Notify on crash detected
-- [ ] Respect Windows Focus Assist settings
+- [x] Use `tauri-plugin-notification` for server start/stop
+- [ ] Notify on backup completed (Phase B)
+- [x] Notify on crash detected
+- [x] Respect Windows Focus Assist settings
 - [ ] Write component tests
 
 ### D5: Write UI refinement tests

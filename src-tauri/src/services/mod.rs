@@ -44,6 +44,15 @@ pub fn notify_backup_completed(app: &AppHandle, profile_name: &str, backup_path:
     );
 }
 
+/// Sends a crash detected notification.
+pub fn notify_crash_detected(app: &AppHandle, profile_name: &str) {
+    notify(
+        app,
+        "ARK Server Crashed",
+        &format!("Server '{}' has crashed. A crash report has been saved.", profile_name),
+    );
+}
+
 pub mod backup;
 pub mod build_id_checker;
 pub mod ini_conversion;

@@ -4,6 +4,11 @@ pub mod crash_report;
 pub mod models;
 pub mod services;
 use std::fs;
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    Emitter, Manager, WindowEvent,
+};
 use tracing_appender::rolling::{RollingFileAppender, Rotation};
 use tracing_subscriber::{fmt, layer::SubscriberExt, util::SubscriberInitExt, EnvFilter};
 
@@ -70,6 +75,70 @@ pub fn server_log_dir(profile_name: &str) -> std::path::PathBuf {
     logs_dir().join("servers").join(profile_name)
 }
 
+/// Sets up the system tray with context menu and event handlers.
+fn setup_tray(app: &tauri::App) -> Result<(), Box<dyn std::error::Error>> {
+    // Create menu items
+    let show_item = MenuItem::with_id(app, "show", "Show Window", true, None::<&str>)?;
+    let start_stop_item = MenuItem::with_id(app, "start_stop", "Start Server", true, None::<&str>)?;
+    let quit_item = MenuItem::with_id(app, "quit", "Exit", true, None::<&str>)?;
+
+    // Build the menu
+    let menu = Menu::with_items(app, &[&show_item, &start_stop_item, &quit_item])?;
+
+    // Get the icon for the tray - use default window icon
+    let icon = app
+        .default_window_icon()
+        .cloned()
+        .ok_or("No default window icon available")?;
+
+    // Build the tray icon
+    let _tray = TrayIconBuilder::new()
+        .icon(icon)
+        .menu(&menu)
+        .tooltip("ARK Server Manager")
+        .on_menu_event(|app, event| {
+            match event.id.as_ref() {
+                "show" => {
+                    // Show and focus the main window
+                    if let Some(window) = app.get_webview_window("main") {
+                        let _ = window.show();
+                        let _ = window.unminimize();
+                        let _ = window.set_focus();
+                    }
+                }
+                "start_stop" => {
+                    // Emit event to frontend to toggle server start/stop
+                    let _ = app.emit("tray-start-stop", ());
+                }
+                "quit" => {
+                    // Fully quit the application
+                    app.exit(0);
+                }
+                _ => {}
+            }
+        })
+        .on_tray_icon_event(|tray, event| {
+            // Double-click on tray icon shows the window
+            if let TrayIconEvent::Click {
+                button: MouseButton::Left,
+                button_state: MouseButtonState::Up,
+                ..
+            } = event
+            {
+                let app = tray.app_handle();
+                if let Some(window) = app.get_webview_window("main") {
+                    let _ = window.show();
+                    let _ = window.unminimize();
+                    let _ = window.set_focus();
+                }
+            }
+        })
+        .build(app)?;
+
+    tracing::info!("System tray initialized");
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     setup_logging();
@@ -79,10 +148,24 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_notification::init())
         .setup(|app| {
+            // Set up system tray
+            if let Err(e) = setup_tray(app) {
+                tracing::error!("Failed to set up system tray: {}", e);
+            }
+
             // Start the background status polling task
             crate::services::server_state::start_status_polling(app.handle().clone());
             tracing::info!("Background status polling task started");
             Ok(())
+        })
+        .on_window_event(|window, event| {
+            // On window close, hide to tray instead of closing
+            if let WindowEvent::CloseRequested { api, .. } = event {
+                // Prevent the window from closing, hide it instead
+                let _ = window.hide();
+                api.prevent_close();
+                tracing::info!("Window hidden to system tray");
+            }
         })
         .invoke_handler(tauri::generate_handler![
             crate::commands::list_profiles,

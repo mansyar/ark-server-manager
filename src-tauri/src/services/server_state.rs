@@ -588,6 +588,9 @@ pub fn start_status_polling(app: tauri::AppHandle) {
                             if let Err(e) = crate::crash_report::save_crash_report(&report) {
                                 tracing::error!("Failed to save crash report: {}", e);
                             }
+
+                            // Send system notification about the crash
+                            crate::services::notify_crash_detected(&app_handle, &profile_name);
                         }
                     }
                 }
