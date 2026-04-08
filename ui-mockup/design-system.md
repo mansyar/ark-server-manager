@@ -65,3 +65,32 @@ The interface relies on Tailwind CSS color tokens.
 
 - **Fade / Slide In:** The `ServerDetailPanel` relies on Tailwind animate-in tools: `animate-in slide-in-from-right duration-300` providing a smooth, native app feel.
 - **Hover Effects:** Almost all interactive elements trigger a visual change (border-color shift or background lighten) to adhere to the principle: *"An interface that feels responsive and alive encourages interaction."*
+
+## 7. ASCII Wireframe
+
+```text
++---------------------------------------------------------------------------------------------+
+|  Ark Server Manager                                                          [+] New Server |
++-------------------------------------------------------------------+-------------------------+
+|                                                                   | > The Island Server   X |
+|  +-----------------------+  +-----------------------+             |-------------------------|
+|  | The Island            |  | Scorched Earth        |             | Status: Running         |
+|  | _ _ _ _ _ _ _ _ _ _ _ |  | _ _ _ _ _ _ _ _ _ _ _ |             |                         |
+|  | Status: Running       |  | Status: Stopped       |             |  [Stop]  [Restart]      |
+|  | CPU: 45% | RAM: 3.2G  |  | CPU: 0%  | RAM: 0.0G  |             |                         |
+|  +-----------------------+  +-----------------------+             | +---------------------+ |
+|                                                                   | | Health Dashboard    | |
+|  +-----------------------+                                        | | CPU: 45% (8 cores)  | |
+|  | Aberration            |                                        | | RAM: 3.2GB / 16GB   | |
+|  | _ _ _ _ _ _ _ _ _ _ _ |                                        | +---------------------+ |
+|  | Status: Stopped       |                                        | +---------------------+ |
+|  | CPU: 0%  | RAM: 0.0G  |                                        | | Console             | |
+|  +-----------------------+                                        | | > SERVER STARTED... | |
+|                                                                   | | > user1 joined.     | |
+|                                                                   | +---------------------+ |
+|                                                                   | +---------------------+ |
+|                                                                   | | Players (1/70)      | |
+|                                                                   | | - user1 (Ping: 45)  | |
+|                                                                   | +---------------------+ |
++-------------------------------------------------------------------+-------------------------+
+```
