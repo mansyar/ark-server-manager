@@ -8,6 +8,18 @@ export interface ServerHandle {
   port: number;
 }
 
+/// Health metrics for a running ARK server.
+export interface HealthMetrics {
+  profile_name: string;
+  cpu_percent: number;
+  memory_mb: number;
+  memory_percent: number;
+  player_count: number;
+  max_players: number;
+  uptime_seconds: number;
+  status: ServerStatus;
+}
+
 export interface ConsoleLine {
   profile_name: string;
   timestamp: string; // ISO string

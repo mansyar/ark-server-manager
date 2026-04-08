@@ -5,7 +5,8 @@ use std::fs::{self, File};
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 use tracing::{debug, error, info, warn};
-use zip::{write::FileOptions, ZipWriter};
+use zip::write::SimpleFileOptions;
+use zip::ZipWriter;
 
 /// Describes a completed or failed backup operation.
 #[derive(Debug, Clone, serde::Serialize)]
@@ -97,7 +98,7 @@ pub fn create_backup(
         }
     };
 
-    let options: zip::write::FileOptions<'_, zip::write::SimpleFileOptions> =
+    let options =
         zip::write::SimpleFileOptions::default()
             .compression_method(zip::CompressionMethod::Deflated)
             .compression_level(Some(5));
@@ -152,7 +153,7 @@ fn walk_dir<W: Write + io::Seek>(
     dir: &Path,
     zip_writer: &mut ZipWriter<W>,
     base_dir: &Path,
-    options: zip::write::FileOptions<'_, zip::write::SimpleFileOptions>,
+    options: SimpleFileOptions,
 ) -> io::Result<()> {
     if !dir.is_dir() {
         return Ok(());
@@ -378,7 +379,7 @@ mod tests {
             let path = temp.path().join(&filename);
             let file = File::create(&path).unwrap();
             let mut zw = ZipWriter::new(file);
-            zw.start_file("a.txt", Default::default()).unwrap();
+            zw.start_file("a.txt", SimpleFileOptions::default()).unwrap();
             zw.write_all(b"x").unwrap();
             zw.finish().unwrap();
 

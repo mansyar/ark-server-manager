@@ -156,6 +156,10 @@ pub fn run() {
             // Start the background status polling task
             crate::services::server_state::start_status_polling(app.handle().clone());
             tracing::info!("Background status polling task started");
+
+            // Start the health monitoring background task
+            crate::services::health::start_health_monitoring(app.handle().clone());
+            tracing::info!("Health monitoring task started");
             Ok(())
         })
         .on_window_event(|window, event| {

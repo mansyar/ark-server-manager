@@ -7,6 +7,7 @@ import type {
   ConsoleLine,
   PlayerInfo,
   ValidationResult,
+  HealthMetrics,
 } from '../types/server';
 
 /// Crash data captured when a server crashes.
@@ -45,6 +46,8 @@ interface ServerState {
   showCrashDialog: boolean;
   // Crash dialog profile
   crashDialogProfile: string | null;
+  // Per-profile health metrics
+  healthMetrics: Record<string, HealthMetrics>;
 }
 
 interface ServerActions {
@@ -95,6 +98,7 @@ export const useServerStore = create<ServerState & ServerActions>((set, get) => 
   crashData: {},
   showCrashDialog: false,
   crashDialogProfile: null,
+  healthMetrics: {},
 
   initListeners: async () => {
     const unlisteners: (() => void)[] = [];
@@ -190,6 +194,29 @@ export const useServerStore = create<ServerState & ServerActions>((set, get) => 
           }));
         }
       )
+    );
+
+    // Listen for health update
+    unlisteners.push(
+      await listen<HealthMetrics>('health-update', (event) => {
+        const metrics = event.payload;
+        set((state) => ({
+          healthMetrics: { ...state.healthMetrics, [metrics.profile_name]: metrics },
+        }));
+      })
+    );
+
+    // Listen for auto-restart-exhausted
+    unlisteners.push(
+      await listen<string>('auto-restart-exhausted', (event) => {
+        const profileName = event.payload;
+        set((state) => ({
+          errors: {
+            ...state.errors,
+            [profileName]: `Auto-restart exhausted: Maximum restart attempts reached within 5 minutes.`,
+          },
+        }));
+      })
     );
 
     set({ unlisteners });
@@ -341,3 +368,6 @@ export const useConsoleBuffer = (profileName: string) =>
 
 export const useServerValidation = (profileName: string) =>
   useServerStore((s) => s.validation[profileName] ?? null);
+
+export const useHealthMetrics = (profileName: string) =>
+  useServerStore((s) => s.healthMetrics[profileName] ?? null);

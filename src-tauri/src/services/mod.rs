@@ -55,6 +55,7 @@ pub fn notify_crash_detected(app: &AppHandle, profile_name: &str) {
 
 pub mod backup;
 pub mod build_id_checker;
+pub mod health;
 pub mod ini_conversion;
 pub mod rcon_client;
 pub mod retry;

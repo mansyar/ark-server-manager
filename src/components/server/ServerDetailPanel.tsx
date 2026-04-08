@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ServerControls } from './ServerControls';
 import { ConsoleViewer } from './ConsoleViewer';
 import { PlayerList } from './PlayerList';
+import { HealthDashboard } from './HealthDashboard';
 import { useProfilesStore } from '@/stores/profilesStore';
 
 function ServerDetailPanel() {
@@ -72,6 +73,11 @@ function ServerDetailPanel() {
         {/* Server Controls */}
         <div className="px-4 py-3 border-b bg-muted/30">
           <ServerControls profileName={activeServerProfile} variant="detail" showLabel />
+        </div>
+
+        {/* Health Dashboard */}
+        <div className="px-4 py-3 border-b">
+          <HealthDashboard profileName={activeServerProfile} />
         </div>
 
         {/* Content: Console + Players in tabs or split view */}

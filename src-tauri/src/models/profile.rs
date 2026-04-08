@@ -87,10 +87,37 @@ pub struct Profile {
     /// Defaults to "backup".
     #[serde(default = "default_backup_suffix")]
     pub backup_suffix: String,
+
+    /// Whether to automatically restart the server on crash.
+    /// Defaults to true.
+    #[serde(default = "default_auto_restart_on_crash")]
+    pub auto_restart_on_crash: bool,
+
+    /// Delay in seconds before attempting auto-restart after crash.
+    /// Defaults to 10 seconds. Valid range: 5-60 seconds.
+    #[serde(default = "default_auto_restart_delay_secs")]
+    pub auto_restart_delay_secs: u32,
+
+    /// Maximum number of restart attempts within 5 minutes before giving up.
+    /// Defaults to 3.
+    #[serde(default = "default_max_restart_attempts")]
+    pub max_restart_attempts: u32,
 }
 
 fn default_backup_suffix() -> String {
     "backup".to_string()
+}
+
+fn default_auto_restart_on_crash() -> bool {
+    true
+}
+
+fn default_auto_restart_delay_secs() -> u32 {
+    10
+}
+
+fn default_max_restart_attempts() -> u32 {
+    3
 }
 
 impl Default for Profile {
@@ -112,6 +139,9 @@ impl Default for Profile {
             backup_dir: None,
             backup_retention_count: 0,
             backup_suffix: "backup".to_string(),
+            auto_restart_on_crash: true,
+            auto_restart_delay_secs: 10,
+            max_restart_attempts: 3,
         }
     }
 }

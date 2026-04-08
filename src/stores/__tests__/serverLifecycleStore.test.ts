@@ -320,7 +320,7 @@ describe('serverLifecycleStore', () => {
 
       // Should have registered multiple listeners
       expect(listen).toHaveBeenCalled();
-      expect(useServerStore.getState().unlisteners).toHaveLength(6);
+      expect(useServerStore.getState().unlisteners).toHaveLength(9);
     });
 
     it('registers all 6 event listeners', async () => {
@@ -328,8 +328,8 @@ describe('serverLifecycleStore', () => {
 
       await useServerStore.getState().initListeners();
 
-      // 6 listeners: server-started, server-stopped, status-changed, server-crashed, console-output, player-list-updated
-      expect(listen).toHaveBeenCalledTimes(6);
+      // 9 listeners: server-started, server-stopped, status-changed, server-crashed, console-output, player-list-updated, health-update, crash-detected, auto-restart-exhausted
+      expect(listen).toHaveBeenCalledTimes(9);
     });
   });
 

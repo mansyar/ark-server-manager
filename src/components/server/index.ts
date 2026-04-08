@@ -9,3 +9,4 @@ export { PortConflictDialog } from './PortConflictDialog';
 export { DiskSpaceDialog } from './DiskSpaceDialog';
 export { ConfigCorruptionDialog } from './ConfigCorruptionDialog';
 export { SteamCMDDownloadDialog } from './SteamCMDDownloadDialog';
+export { HealthDashboard } from './HealthDashboard';
